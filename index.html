@@ -302,7 +302,7 @@ body {
   font-style: normal;
 }
 
-.section > p, .section > .content-text {
+.section > p {
   color: var(--text-secondary);
   margin-bottom: 1.25rem;
   line-height: 1.8;
@@ -526,30 +526,6 @@ tbody tr:hover { background: var(--bg-hover); }
   font-size: 0.9rem;
   line-height: 1.7;
 }
-
-/* ── Tabs ── */
-.tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
-}
-
-.tab-btn {
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 0.6rem 1.2rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.tab-btn:hover { color: var(--text-primary); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
 .tab-content { display: none; padding-top: 0.5rem; }
 .tab-content.active { display: block; }
@@ -963,7 +939,7 @@ mark {
     </div>
     <div class="hero-meta">
       <div class="hero-meta-item"><span class="icon">⏱️</span> ~45 minutes total setup</div>
-      <div class="hero-meta-item"><span class="icon">🎯</span> 7 layers of protection</div>
+      <div class="hero-meta-item"><span class="icon">🎯</span> 8 layers of protection</div>
       <div class="hero-meta-item"><span class="icon">💾</span> Persistent — set up once</div>
     </div>
   </header>
@@ -1008,6 +984,7 @@ mark {
         <tbody>
           <tr><td><strong>Step 1 — Git checkpoint</strong></td><td>Auto-commit before every session</td><td>Everything (nuclear rollback)</td></tr>
           <tr><td><strong>Step 2 — Permission whitelist</strong></td><td>Blocks rm, sudo, rmdir</td><td>File deletion, privilege escalation</td></tr>
+          <tr><td><strong>Step 2b — Safety hooks</strong></td><td>Deterministic pre/post tool enforcement via stdin JSON</td><td>Bypass of deny rules, indirect deletion</td></tr>
           <tr><td><strong>Step 3 — CLAUDE.md</strong></td><td>Forbids .pbxproj edits, sets rules</td><td>Project corruption, scope creep</td></tr>
           <tr><td><strong>Step 4 — XcodeBuildMCP</strong></td><td>Structured build/test/run tools</td><td>Malformed xcodebuild commands</td></tr>
           <tr><td><strong>Step 5 — Slash commands</strong></td><td>Quick access to safe workflows</td><td>Human error, repetitive typing</td></tr>
@@ -1241,7 +1218,7 @@ sed 's|//.*||' ~/.claude/settings.json | python3 -c "import sys,json; json.load(
         <span class="string">"matcher"</span>: <span class="string">"Edit"</span>,
         <span class="string">"hooks"</span>: [{
           <span class="string">"type"</span>: <span class="string">"command"</span>,
-          <span class="string">"command"</span>: <span class="string">"jq -r '.tool_input.file_path // empty' | grep -q '.pbxproj' &amp;&amp; echo 'BLOCKED: .pbxproj edit' &gt;&amp;2 &amp;&amp; exit 2 || exit 0"</span>
+          <span class="string">"command"</span>: <span class="string">"jq -r '.tool_input.file_path // empty' | grep -q '\\.pbxproj' &amp;&amp; echo 'BLOCKED: .pbxproj edit' &gt;&amp;2 &amp;&amp; exit 2 || exit 0"</span>
         }]
       }
     ],
@@ -1343,7 +1320,7 @@ open CLAUDE.md</code></pre>
 - Place new Swift files in the correct group folder.
 - Use SwiftUI for new views unless told otherwise.
 - Prefer @Observable over ObservableObject for iOS 17+ targets.
-- Use structured concurrency (async/await) over completion handlers.
+- Use async/await over completion handlers.
 - Use #Preview macro syntax for iOS 17+ projects.
 - Add MARK: comments to organize code sections.
 - Follow existing code patterns and naming conventions.
@@ -1459,7 +1436,7 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
       <table>
         <thead><tr><th>Category</th><th>Key Tools</th><th>What They Do</th></tr></thead>
         <tbody>
-          <tr><td><strong>Simulator</strong></td><td><code>simulator/build</code>, <code>simulator/build-and-run</code>, <code>simulator/test</code></td><td>Build, run, and test on iOS Simulator</td></tr>
+          <tr><td><strong>Simulator</strong></td><td><code>simulator/build</code>, <code>simulator/build-and-run</code>, <code>simulator/test</code></td><td>Build, run, and test on Simulator</td></tr>
           <tr><td><strong>Screenshots</strong></td><td><code>simulator/screenshot</code></td><td>Capture simulator screen for visual verification</td></tr>
           <tr><td><strong>UI Automation</strong></td><td><code>ui-automation/tap</code>, <code>ui-automation/swipe</code>, <code>ui-automation/type</code>, <code>ui-automation/long-press</code></td><td>Interact with running app UI elements</td></tr>
           <tr><td><strong>UI Inspection</strong></td><td><code>describe_ui</code></td><td>Get full view hierarchy with frame coordinates</td></tr>
@@ -1488,7 +1465,7 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
 
     <div class="callout info">
       <span class="callout-icon">ℹ️</span>
-      <strong>Skills vs. slash commands:</strong> As of Claude Code v2.1, slash commands have been merged into the skills system. The <code>.claude/commands/</code> approach still works (backward-compatible), but the recommended path is <code>.claude/skills/</code> with <code>user-invocable: true</code>. Both approaches are shown below.
+      <strong>Skills vs. slash commands:</strong> As of Claude Code v2.1, slash commands have been merged into the skills system. The <code>.claude/commands/</code> approach still works (backward-compatible), but the recommended path is <code>.claude/skills/</code> with <code>user-invocable: true</code>. The commands approach is shown below as it's simpler to set up.
     </div>
 
     <h3><span class="sub-step">5a</span> — Create the commands directory</h3>
@@ -1506,7 +1483,7 @@ mkdir -p .claude/commands</code></pre>
 description: Build the project on simulator
 allowed-tools: mcp__xcodebuildmcp__*
 ---
-Build the project using `mcp__xcodebuildmcp__build_sim_name_proj`.
+Build the project using XcodeBuildMCP's simulator/build tool.
 Report any build errors clearly with file, line number, and suggested fix.
 EOF</code></pre>
     </div>
@@ -1519,7 +1496,7 @@ EOF</code></pre>
 description: Run all unit tests
 allowed-tools: mcp__xcodebuildmcp__*
 ---
-Run all tests using `mcp__xcodebuildmcp__test_sim_name_proj`.
+Run all tests using XcodeBuildMCP's simulator/test tool.
 Summarize results: total, passed, failed.
 For failures show test name, expected vs actual, and a fix.
 EOF</code></pre>
@@ -1754,7 +1731,7 @@ claude --dangerously-skip-permissions</code></pre>
       <div class="code-block">
         <div class="code-header"><span class="code-label">Docker one-liner</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
         <pre><code>docker run -it --rm \
-  -v $(pwd):/workspace \
+  -v "$(pwd)":/workspace \
   -v ~/.claude:/root/.claude \
   -v ~/.claude.json:/root/.claude.json \
   node:20 \
@@ -1972,11 +1949,14 @@ claude</code></pre>
         <p>Check that your hooks are in the correct location and have the right structure:</p>
         <div class="code-block">
           <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
-          <pre><code><span class="comment"># Validate your settings.json</span>
-python3 -c "import json; json.load(open('$HOME/.claude/settings.json')); print('Valid JSON')"
+          <pre><code><span class="comment"># Validate your settings.json (strip JSONC comments first)</span>
+sed 's|//.*||' ~/.claude/settings.json | python3 -c "import sys,json; json.load(sys.stdin); print('Valid JSON')"
 
 <span class="comment"># Make sure hooks key is at the top level, alongside permissions</span>
-<span class="comment"># NOT nested inside permissions</span></code></pre>
+<span class="comment"># NOT nested inside permissions</span>
+
+<span class="comment"># Also check that jq is installed (hooks need it)</span>
+which jq || echo "Install jq: brew install jq"</code></pre>
         </div>
         <p>Also verify the hook command works standalone: copy the <code>"command"</code> value and run it directly in terminal with a test input.</p>
       </div></div>
@@ -2152,27 +2132,32 @@ function buildClaudeMd() {
   });
 
   let md = '# Project Rules for Claude Code\n\n## Critical — Never Do These\n';
-  if (rules.pbxproj) md += '- NEVER modify any .pbxproj or .xcscheme file directly.\n';
+  if (rules.pbxproj) md += '- NEVER modify any .pbxproj file directly.\n';
+  md += '- NEVER modify .xcscheme or build configuration files.\n';
   if (rules.deletion) md += '- NEVER use rm, rm -rf, rmdir, or any file deletion command.\n';
   md += '- NEVER create files outside the project directory.\n';
   md += '- NEVER modify .gitignore without asking first.\n';
   md += '- NEVER touch lockfiles (Podfile.lock, Package.resolved).\n';
-  md += '- NEVER modify signing or provisioning settings.\n';
+  md += '- NEVER modify Info.plist signing or provisioning settings.\n';
   md += '- NEVER add third-party dependencies without asking.\n';
+  md += '- NEVER run `pod install` or `swift package resolve` without asking.\n';
+  md += '- NEVER use `open -a` to launch applications.\n';
 
   md += '\n## Required Practices\n';
   md += '- Commit checkpoints after completing a feature.\n';
   md += '- Place new Swift files in the correct group folder.\n';
   md += '- Use SwiftUI for new views unless told otherwise.\n';
   if (rules.observable && parseInt(ios) >= 17) md += '- Prefer @Observable over ObservableObject.\n';
-  if (rules.async) md += '- Use structured concurrency (async/await) over completion handlers.\n';
+  if (rules.async) md += '- Use async/await over completion handlers.\n';
   if (parseInt(ios) >= 17) md += '- Use #Preview macro syntax for previews.\n';
   md += '- Add MARK: comments to organize code sections.\n';
   md += '- Follow existing code patterns and naming conventions.\n';
+  md += '- Add Logger/os_log statements for complex async flows.\n';
   if (rules.tests) md += '- Write XCTest unit tests for new business logic.\n';
   if (rules.swiftdata) md += '- Use SwiftData for persistence. Follow existing model patterns.\n';
   if (rules.tca) md += '- Follow TCA patterns: Reducer, Action, State, Effect.\n- Keep side effects in Effect. Views observe Store.\n';
   md += '- When fixing a build error, fix only that error — do not refactor.\n';
+  md += '- Maximum file length: 300 lines. Suggest splitting if exceeded.\n';
 
   md += '\n## Build Instructions\n';
   md += '- Use XcodeBuildMCP tools instead of raw xcodebuild.\n';

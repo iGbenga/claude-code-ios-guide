@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A single-page static documentation website teaching Apple platform developers to safely use Claude Code with `--dangerously-skip-permissions` for autonomous Xcode development across iOS, watchOS, tvOS, visionOS, and macOS. The guide implements a 7-layer defense strategy (git checkpoints, permission whitelists, CLAUDE.md guardrails, XcodeBuildMCP, slash commands/skills, simulator tools, daily workflow) to prevent file destruction and project corruption.
+A single-page static documentation website teaching Apple platform developers to safely use Claude Code with `--dangerously-skip-permissions` for autonomous Xcode development across iOS, watchOS, tvOS, visionOS, and macOS. The guide implements an 8-layer defense strategy (git checkpoints, permission whitelists, safety hooks, CLAUDE.md guardrails, XcodeBuildMCP, slash commands/skills, simulator tools, daily workflow) to prevent file destruction and project corruption.
 
 **Live repo:** `github.com/iGbenga/claude-code-ios-guide`
 
