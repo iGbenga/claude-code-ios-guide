@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code iOS Safety Guide</title>
+<meta name="description" content="Run Claude Code safely with Xcode and iOS development. Step-by-step setup for permissions, guardrails, XcodeBuildMCP, and DevContainers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #151c2c;
+  --bg-code: #0d1321;
+  --bg-sidebar: #0d1220;
+  --bg-hover: #1e2a3e;
+  --text-primary: #e2e8f0;
+  --text-secondary: #8b95a8;
+  --text-muted: #5a6477;
+  --accent: #22d3ee;
+  --accent-dim: rgba(34,211,238,0.12);
+  --accent-green: #34d399;
+  --accent-green-dim: rgba(52,211,153,0.12);
+  --accent-orange: #fb923c;
+  --accent-orange-dim: rgba(251,146,60,0.12);
+  --accent-red: #f87171;
+  --accent-red-dim: rgba(248,113,113,0.12);
+  --accent-purple: #a78bfa;
+  --accent-purple-dim: rgba(167,139,250,0.12);
+  --border: #1e293b;
+  --border-bright: #334155;
+  --code-keyword: #c084fc;
+  --code-string: #34d399;
+  --code-comment: #5a6477;
+  --code-flag: #22d3ee;
+  --scrollbar-track: #111827;
+  --scrollbar-thumb: #334155;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --hot-bg: rgba(251,146,60,0.15);
+  --hot-text: #fb923c;
+  --badge-new-bg: rgba(34,211,238,0.15);
+  --badge-new-text: #22d3ee;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-code: #f1f5f9;
+  --bg-sidebar: #f1f5f9;
+  --bg-hover: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent: #0891b2;
+  --accent-dim: rgba(8,145,178,0.08);
+  --accent-green: #059669;
+  --accent-green-dim: rgba(5,150,105,0.08);
+  --accent-orange: #ea580c;
+  --accent-orange-dim: rgba(234,88,12,0.08);
+  --accent-red: #dc2626;
+  --accent-red-dim: rgba(220,38,38,0.08);
+  --accent-purple: #7c3aed;
+  --accent-purple-dim: rgba(124,58,237,0.08);
+  --border: #e2e8f0;
+  --border-bright: #cbd5e1;
+  --code-keyword: #7c3aed;
+  --code-string: #059669;
+  --code-comment: #94a3b8;
+  --code-flag: #0891b2;
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --hot-bg: rgba(234,88,12,0.1);
+  --hot-text: #ea580c;
+  --badge-new-bg: rgba(8,145,178,0.1);
+  --badge-new-text: #0891b2;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+::selection { background: var(--accent); color: var(--bg-primary); }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 280px;
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s ease, background 0.3s;
+}
+
+.sidebar-header {
+  padding: 0 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.sidebar-logo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.sidebar-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 0.25rem;
+}
+
+.sidebar-group { margin-bottom: 1rem; }
+
+.sidebar-group-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 1.25rem 0.25rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1.25rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+  border-left-color: var(--accent);
+}
+
+.sidebar-link.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-left-color: var(--accent);
+}
+
+.sidebar-link .icon { font-size: 1rem; width: 1.3rem; text-align: center; }
+
+.badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+.badge.hot { background: var(--hot-bg); color: var(--hot-text); }
+.badge.new { background: var(--badge-new-bg); color: var(--badge-new-text); }
+
+/* ── Theme Toggle ── */
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 200;
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.3rem;
+  box-shadow: var(--shadow);
+}
+
+.theme-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.theme-btn.active { background: var(--accent-dim); color: var(--accent); }
+.theme-btn:hover:not(.active) { color: var(--text-primary); }
+
+/* ── Mobile Menu ── */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow);
+}
+
+/* ── Main Content ── */
+.main { margin-left: 280px; max-width: 860px; padding: 2rem 3rem 4rem; }
+
+/* ── Hero ── */
+.hero {
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.hero h1 span { color: var(--accent); }
+
+.hero p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.hero-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.hero-meta-item .icon { font-size: 1rem; }
+
+/* ── Sections ── */
+.section { margin-bottom: 3.5rem; scroll-margin-top: 2rem; }
+
+.section-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.section h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.section h2 em {
+  color: var(--accent);
+  font-style: normal;
+}
+
+.section > p, .section > .content-text {
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+}
+
+.section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+  color: var(--text-primary);
+}
+
+/* ── Step Badges ── */
+.step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+}
+
+.step-time {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-family: var(--font-body);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Code Blocks ── */
+.code-block {
+  position: relative;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 1rem 0 1.5rem;
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.code-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.code-copy {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.code-copy:hover { color: var(--accent); border-color: var(--accent); }
+.code-copy.copied { color: var(--accent-green); border-color: var(--accent-green); }
+
+.code-block pre {
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.code-block code {
+  font-family: inherit;
+}
+
+.code-block .comment { color: var(--code-comment); }
+.code-block .string { color: var(--code-string); }
+.code-block .keyword { color: var(--code-keyword); }
+.code-block .flag { color: var(--code-flag); }
+
+/* ── Inline Code ── */
+code:not(pre code) {
+  background: var(--accent-dim);
+  color: var(--accent);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+/* ── Callout Boxes ── */
+.callout {
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  border-left: 4px solid;
+}
+
+.callout-icon { margin-right: 0.4rem; }
+
+.callout.tip {
+  background: var(--accent-green-dim);
+  border-color: var(--accent-green);
+  color: var(--text-secondary);
+}
+
+.callout.warning {
+  background: var(--accent-orange-dim);
+  border-color: var(--accent-orange);
+  color: var(--text-secondary);
+}
+
+.callout.danger {
+  background: var(--accent-red-dim);
+  border-color: var(--accent-red);
+  color: var(--text-secondary);
+}
+
+.callout.info {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text-secondary);
+}
+
+.callout strong { color: var(--text-primary); }
+
+/* ── Tables ── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+thead { background: var(--bg-secondary); }
+
+th {
+  text-align: left;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+tr:last-child td { border-bottom: none; }
+
+tbody tr:hover { background: var(--bg-hover); }
+
+/* ── Collapsible FAQ ── */
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background: var(--bg-card);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.faq-question:hover { background: var(--bg-hover); }
+
+.faq-arrow {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: transform 0.3s;
+}
+
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.faq-answer-inner {
+  padding: 0 1.25rem 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 1.2rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-content { display: none; padding-top: 0.5rem; }
+.tab-content.active { display: block; }
+
+/* ── Back to Top ── */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 42px;
+  height: 42px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.back-to-top.visible { opacity: 1; pointer-events: all; }
+.back-to-top:hover { transform: translateY(-2px); }
+
+/* ── Footer ── */
+.footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ── Sub-step numbering ── */
+.sub-step {
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); width: 280px; }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.4); }
+  .mobile-menu-btn { display: block; }
+  .main { margin-left: 0; padding: 2rem 1.25rem 3rem; }
+  .hero h1 { font-size: 1.8rem; }
+  .theme-toggle { top: 1rem; right: 4rem; }
+}
+
+@media (max-width: 500px) {
+  .hero h1 { font-size: 1.5rem; }
+  .code-block pre { font-size: 0.78rem; padding: 0.75rem 1rem; }
+  .hero-meta { flex-direction: column; gap: 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
+
+<!-- Theme Toggle -->
+<div class="theme-toggle">
+  <button class="theme-btn" id="darkBtn" onclick="setTheme('dark')" title="Dark mode">🌙</button>
+  <button class="theme-btn" id="lightBtn" onclick="setTheme('light')" title="Light mode">☀️</button>
+</div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">claude code</div>
+    <div class="sidebar-title">iOS Safety Guide</div>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Getting Started</div>
+    <a href="#prereqs" class="sidebar-link"><span class="icon">📋</span> Prerequisites</a>
+    <a href="#overview" class="sidebar-link"><span class="icon">🗺️</span> Overview</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Native Xcode Setup</div>
+    <a href="#step1" class="sidebar-link"><span class="icon">🔒</span> Git Checkpoint <span class="badge hot">critical</span></a>
+    <a href="#step2" class="sidebar-link"><span class="icon">🛡️</span> Permission Whitelist <span class="badge hot">critical</span></a>
+    <a href="#step3" class="sidebar-link"><span class="icon">📄</span> CLAUDE.md Guardrails</a>
+    <a href="#step4" class="sidebar-link"><span class="icon">🔧</span> XcodeBuildMCP</a>
+    <a href="#step5" class="sidebar-link"><span class="icon">⚡</span> Slash Commands</a>
+    <a href="#step6" class="sidebar-link"><span class="icon">📱</span> Simulator Skill</a>
+    <a href="#step7" class="sidebar-link"><span class="icon">🔄</span> Daily Workflow</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Container Approach</div>
+    <a href="#devcontainer" class="sidebar-link"><span class="icon">🐳</span> VSCode DevContainer <span class="badge new">alt</span></a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Reference</div>
+    <a href="#reference" class="sidebar-link"><span class="icon">📖</span> Quick Reference</a>
+    <a href="#troubleshoot" class="sidebar-link"><span class="icon">🩺</span> Troubleshooting</a>
+    <a href="#xcode26" class="sidebar-link"><span class="icon">🔮</span> Xcode 26 + Claude</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Hero -->
+  <header class="hero" id="top">
+    <h1>Claude Code <span>iOS Safety Guide</span></h1>
+    <p>Run <code>claude --dangerously-skip-permissions</code> for fast, autonomous iOS development — without risking file destruction or project corruption. Step-by-step setup with every terminal command spelled out.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="icon">⏱️</span> ~45 minutes total setup</div>
+      <div class="hero-meta-item"><span class="icon">🎯</span> 7 layers of protection</div>
+      <div class="hero-meta-item"><span class="icon">💾</span> Persistent — set up once</div>
+    </div>
+  </header>
+
+  <!-- Prerequisites -->
+  <section class="section" id="prereqs">
+    <span class="section-icon">📋</span>
+    <h2>Pre<em>requisites</em></h2>
+    <p>You need Claude Code installed and working before starting this guide.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-label">Install Claude Code</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-label">Verify installation</span>
+        <button class="code-copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><code>claude --version</code></pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>Also need:</strong> Xcode installed and opened at least once (to accept the license), Git configured, and a macOS machine. Node.js is required for XcodeBuildMCP in Step 4.
+    </div>
+  </section>
+
+  <!-- Overview -->
+  <section class="section" id="overview">
+    <span class="section-icon">🗺️</span>
+    <h2>Safety <em>Overview</em></h2>
+    <p>The guide uses a layered defense approach. Steps are ranked by impact — do the top ones first and you're already 90% protected. Everything is persistent — you set it up once.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Layer</th><th>What It Does</th><th>Protects Against</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Step 1 — Git checkpoint</strong></td><td>Auto-commit before every session</td><td>Everything (nuclear rollback)</td></tr>
+          <tr><td><strong>Step 2 — Permission whitelist</strong></td><td>Blocks rm, sudo, rmdir</td><td>File deletion, privilege escalation</td></tr>
+          <tr><td><strong>Step 3 — CLAUDE.md</strong></td><td>Forbids .pbxproj edits, sets rules</td><td>Project corruption, scope creep</td></tr>
+          <tr><td><strong>Step 4 — XcodeBuildMCP</strong></td><td>Structured build/test/run tools</td><td>Malformed xcodebuild commands</td></tr>
+          <tr><td><strong>Step 5 — Slash commands</strong></td><td>Quick access to safe workflows</td><td>Human error, repetitive typing</td></tr>
+          <tr><td><strong>Step 6 — Simulator skill</strong></td><td>Structured simulator interaction</td><td>Raw simctl mistakes</td></tr>
+          <tr><td><strong>Step 7 — Daily workflow</strong></td><td>Repeatable safe process</td><td>Forgetting to checkpoint</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <strong>Known limitation:</strong> Some versions of Claude Code have bugs where <code>deny</code> rules don't consistently fire for Bash commands. This is why the git checkpoint (Step 1) is your primary safety net, not the permission config alone.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 1 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step1">
+    <div class="step-label">Step 1 <span class="step-time">· 5 minutes</span></div>
+    <span class="section-icon">🔒</span>
+    <h2>Git Checkpoint <em>Alias</em></h2>
+    <p>This is your single most important safety layer. If Claude deletes files, corrupts your <code>.pbxproj</code>, or makes bad changes — one command rolls everything back. You're adding a shortcut command (called an "alias") to your shell configuration file.</p>
+
+    <h3><span class="sub-step">1a</span> — Open your shell config file</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Open ~/.zshrc in TextEdit</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>open ~/.zshrc</code></pre>
+    </div>
+    <p>If you get an error saying the file doesn't exist, create it first:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Create the file if missing</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>touch ~/.zshrc
+open ~/.zshrc</code></pre>
+    </div>
+
+    <h3><span class="sub-step">1b</span> — Paste the alias at the bottom of the file</h3>
+    <p>Scroll to the very bottom and paste this line:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Safe Claude Code launcher alias</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Safe Claude Code launcher — auto-commits before every session</span>
+alias clauded='git add -A && git commit -m "pre-claude checkpoint $(date +%H:%M)" --allow-empty && claude --dangerously-skip-permissions'</code></pre>
+    </div>
+
+    <h3><span class="sub-step">1c</span> — Save and reload</h3>
+    <p>Save the file (<strong>Cmd + S</strong>), close TextEdit, then reload:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Reload shell config</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>source ~/.zshrc</code></pre>
+    </div>
+
+    <h3><span class="sub-step">1d</span> — Verify it worked</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Check the alias exists</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>which clauded</code></pre>
+    </div>
+    <p>You should see output like <code>clauded: aliased to git add -A && ...</code>. If you see "not found", repeat steps 1a–1c.</p>
+
+    <h3>How to use it</h3>
+    <p>From now on, start every Claude session with <code>clauded</code> instead of <code>claude</code>:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Start a safe session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cd ~/path/to/your/ios-project
+clauded</code></pre>
+    </div>
+
+    <p>If anything goes wrong mid-session, undo everything Claude did:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Nuclear rollback</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Undo everything</span>
+git reset --hard HEAD
+
+<span class="comment"># Or review changes first</span>
+git diff HEAD</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 2 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step2">
+    <div class="step-label">Step 2 <span class="step-time">· 10 minutes</span></div>
+    <span class="section-icon">🛡️</span>
+    <h2>Permission <em>Whitelist</em></h2>
+    <p>This explicitly allows only the commands Claude needs and blocks destructive ones like <code>rm</code> (delete).</p>
+
+    <h3><span class="sub-step">2a</span> — Create the settings directory</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Check if it exists, create if not</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Check if directory exists</span>
+ls ~/.claude/
+
+<span class="comment"># If "No such file or directory", create it:</span>
+mkdir -p ~/.claude</code></pre>
+    </div>
+
+    <h3><span class="sub-step">2b</span> — Check for existing settings</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">View current settings (if any)</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cat ~/.claude/settings.json</code></pre>
+    </div>
+    <p>If you see existing content, you'll merge carefully. If "No such file or directory", proceed to create it.</p>
+
+    <h3><span class="sub-step">2c</span> — Open the settings file</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Create and open settings.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>touch ~/.claude/settings.json
+open ~/.claude/settings.json</code></pre>
+    </div>
+
+    <h3><span class="sub-step">2d</span> — Paste the permission config</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">~/.claude/settings.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>{
+  <span class="string">"permissions"</span>: {
+    <span class="string">"allow"</span>: [
+      <span class="string">"Read(*)"</span>, <span class="string">"Write(*)"</span>, <span class="string">"Edit(*)"</span>,
+      <span class="string">"Bash(ls:*)"</span>, <span class="string">"Bash(mkdir:*)"</span>, <span class="string">"Bash(mv:*)"</span>,
+      <span class="string">"Bash(cp:*)"</span>, <span class="string">"Bash(cat:*)"</span>, <span class="string">"Bash(head:*)"</span>,
+      <span class="string">"Bash(tail:*)"</span>, <span class="string">"Bash(grep:*)"</span>, <span class="string">"Bash(rg:*)"</span>,
+      <span class="string">"Bash(find:*)"</span>, <span class="string">"Bash(git:*)"</span>, <span class="string">"Bash(swift:*)"</span>,
+      <span class="string">"Bash(swiftc:*)"</span>, <span class="string">"Bash(xcodebuild:*)"</span>,
+      <span class="string">"Bash(xcrun:*)"</span>, <span class="string">"Bash(simctl:*)"</span>,
+      <span class="string">"Bash(pod:*)"</span>, <span class="string">"Bash(mint:*)"</span>, <span class="string">"Bash(spm:*)"</span>,
+      <span class="string">"Bash(brew:*)"</span>, <span class="string">"Bash(npm:*)"</span>, <span class="string">"Bash(npx:*)"</span>,
+      <span class="string">"Bash(touch:*)"</span>, <span class="string">"Bash(echo:*)"</span>, <span class="string">"Bash(sed:*)"</span>,
+      <span class="string">"Bash(awk:*)"</span>, <span class="string">"Bash(chmod:*)"</span>, <span class="string">"Bash(make:*)"</span>,
+      <span class="string">"Bash(python3:*)"</span>, <span class="string">"Bash(curl:*)"</span>,
+      <span class="string">"Bash(cd:*)"</span>, <span class="string">"Bash(wc:*)"</span>, <span class="string">"Bash(sort:*)"</span>,
+      <span class="string">"Bash(uniq:*)"</span>, <span class="string">"Bash(diff:*)"</span>,
+      <span class="string">"Bash(which:*)"</span>, <span class="string">"Bash(open:*)"</span>,
+      <span class="string">"Bash(pkill:*)"</span>
+    ],
+    <span class="string">"deny"</span>: [
+      <span class="string">"Bash(rm:*)"</span>,
+      <span class="string">"Bash(rmdir:*)"</span>,
+      <span class="string">"Bash(sudo:*)"</span>,
+      <span class="string">"Bash(sudo rm:*)"</span>,
+      <span class="string">"Bash(chmod 777:*)"</span>
+    ]
+  }
+}</code></pre>
+    </div>
+
+    <h3><span class="sub-step">2e</span> — Save and validate</h3>
+    <p>Save the file (<strong>Cmd + S</strong>), close TextEdit, then validate the JSON:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Validate JSON syntax</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>python3 -c "import json; json.load(open('$HOME/.claude/settings.json')); print('Valid JSON')"</code></pre>
+    </div>
+    <p>If you see <strong>"Valid JSON"</strong>, you're good. If you see an error, open the file and check for missing commas or brackets.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>What this does:</strong> <code>rm</code>, <code>rmdir</code>, and <code>sudo</code> are blocked. All standard dev tools (git, swift, xcodebuild, xcrun, simctl) are pre-approved so you won't get interrupted by permission prompts.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 3 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step3">
+    <div class="step-label">Step 3 <span class="step-time">· 5 minutes</span></div>
+    <span class="section-icon">📄</span>
+    <h2>CLAUDE.md <em>Guardrails</em></h2>
+    <p>Claude reads a file called <code>CLAUDE.md</code> automatically at the start of every session and treats the contents as binding instructions. You'll create one in your iOS project.</p>
+
+    <h3><span class="sub-step">3a</span> — Navigate to your project</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Go to your iOS project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Replace with your actual project path</span>
+cd ~/Developer/MyApp</code></pre>
+    </div>
+
+    <h3><span class="sub-step">3b</span> — Create and open CLAUDE.md</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Create the file</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>touch CLAUDE.md
+open CLAUDE.md</code></pre>
+    </div>
+
+    <h3><span class="sub-step">3c</span> — Paste the guardrails</h3>
+    <p>Paste this into the file and customize the bottom section:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">CLAUDE.md</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code># Project Rules for Claude Code
+
+## Critical — Never Do These
+- NEVER modify any .pbxproj file directly. If new files need
+  to be added to the Xcode project, create the file and tell
+  me to add it in Xcode manually.
+- NEVER use rm, rm -rf, rmdir, or any file deletion command.
+- NEVER modify .gitignore without asking first.
+- NEVER touch Podfile.lock, Package.resolved, or any lockfiles.
+- NEVER modify Info.plist signing or provisioning settings.
+- NEVER run `pod install` or `swift package resolve` without asking.
+
+## Required Practices
+- Commit checkpoints after completing a feature or significant change.
+- Place new Swift files in the correct group folder.
+- Use SwiftUI for new views unless told otherwise.
+- Follow existing code patterns and naming conventions.
+- Add Logger/os_log statements for complex async flows.
+- Write XCTest unit tests for new business logic.
+
+## Build Instructions
+- Always use XcodeBuildMCP tools instead of raw xcodebuild.
+- Build: mcp__xcodebuildmcp__build_sim_name_proj
+- Test:  mcp__xcodebuildmcp__test_sim_name_proj
+- Run:   mcp__xcodebuildmcp__build_run_sim_name_proj
+
+## Project Architecture
+- Architecture: [MVVM / MVC / TCA — replace with yours]
+- Min target:   iOS [17 / 18 — replace with yours]
+- Packages:     [SPM / CocoaPods — replace with yours]
+- Main scheme:  [YourAppScheme — replace with yours]</code></pre>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <strong>How to find your project details:</strong> Architecture — if you have ViewModel files, it's likely MVVM. Deployment target — Xcode → project → General → Minimum Deployments. Package manager — if you have a Podfile it's CocoaPods, if Package.swift it's SPM. Main scheme — the scheme selector next to the play button in Xcode.
+    </div>
+
+    <h3><span class="sub-step">3d</span> — Commit to your project</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Save guardrails to git</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>git add CLAUDE.md
+git commit -m "add Claude Code project guardrails"</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 4 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step4">
+    <div class="step-label">Step 4 <span class="step-time">· 10 minutes</span></div>
+    <span class="section-icon">🔧</span>
+    <h2>Xcode<em>BuildMCP</em></h2>
+    <p>This gives Claude structured, safe tools for building and testing your iOS app instead of running raw shell commands.</p>
+
+    <h3><span class="sub-step">4a</span> — Check Node.js</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Verify Node.js is installed</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>node --version</code></pre>
+    </div>
+    <p>If you see a version number (e.g. <code>v20.11.0</code>), skip to 4b. If "command not found":</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Install Node.js via Homebrew</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Install Homebrew first if you don't have it:</span>
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+<span class="comment"># Then install Node:</span>
+brew install node</code></pre>
+    </div>
+
+    <h3><span class="sub-step">4b</span> — Install XcodeBuildMCP</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Add the MCP server</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>claude mcp add --transport stdio XcodeBuildMCP -- npx -y xcodebuildmcp@latest</code></pre>
+    </div>
+
+    <h3><span class="sub-step">4c</span> — (Optional) Enable fast rebuilds</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Incremental builds + dynamic tools</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>claude mcp add --transport stdio XcodeBuildMCP \
+  --env INCREMENTAL_BUILDS_ENABLED=true \
+  --env XCODEBUILDMCP_DYNAMIC_TOOLS=true \
+  -- npx -y xcodebuildmcp@latest</code></pre>
+    </div>
+
+    <h3><span class="sub-step">4d</span> — Verify it works</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Test inside a Claude session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Start a Claude session in your project</span>
+cd ~/path/to/your/ios-project
+claude
+
+<span class="comment"># Inside the session, type:</span>
+mcp__xcodebuildmcp__list_simulators
+
+<span class="comment"># You should see iPhone 15, iPhone 16, etc.</span>
+<span class="comment"># Type /exit to leave</span></code></pre>
+    </div>
+
+    <p>If you get an error, verify Xcode command line tools are installed:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Check Xcode CLI tools</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>xcode-select -p          <span class="comment"># Should print a path</span>
+xcode-select --install   <span class="comment"># Install if missing</span></code></pre>
+    </div>
+
+    <h3>Available MCP Tools</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Task</th><th>MCP Tool</th></tr></thead>
+        <tbody>
+          <tr><td>Build for simulator</td><td><code>mcp__xcodebuildmcp__build_sim_name_proj</code></td></tr>
+          <tr><td>Run tests</td><td><code>mcp__xcodebuildmcp__test_sim_name_proj</code></td></tr>
+          <tr><td>Build and run</td><td><code>mcp__xcodebuildmcp__build_run_sim_name_proj</code></td></tr>
+          <tr><td>Clean build folder</td><td><code>mcp__xcodebuildmcp__clean_proj</code></td></tr>
+          <tr><td>List simulators</td><td><code>mcp__xcodebuildmcp__list_simulators</code></td></tr>
+          <tr><td>Boot a simulator</td><td><code>mcp__xcodebuildmcp__boot_simulator</code></td></tr>
+          <tr><td>Swift package build</td><td><code>mcp__xcodebuildmcp__swift_package_build</code></td></tr>
+          <tr><td>Swift package test</td><td><code>mcp__xcodebuildmcp__swift_package_test</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 5 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step5">
+    <div class="step-label">Step 5 <span class="step-time">· 5 minutes</span></div>
+    <span class="section-icon">⚡</span>
+    <h2>Slash <em>Commands</em></h2>
+    <p>Shortcuts you can type inside a Claude Code session. Instead of a long instruction, type <code>/build</code> or <code>/test</code>.</p>
+
+    <h3><span class="sub-step">5a</span> — Create the commands directory</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Create .claude/commands/</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cd ~/path/to/your/ios-project
+mkdir -p .claude/commands</code></pre>
+    </div>
+
+    <h3><span class="sub-step">5b</span> — Create the build command</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">.claude/commands/build.md</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cat > .claude/commands/build.md << 'EOF'
+---
+description: Build the iOS project on simulator
+allowed-tools: mcp__xcodebuildmcp__*
+---
+Build the project using `mcp__xcodebuildmcp__build_sim_name_proj`.
+Report any build errors clearly with file, line number, and suggested fix.
+EOF</code></pre>
+    </div>
+
+    <h3><span class="sub-step">5c</span> — Create the test command</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">.claude/commands/test.md</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cat > .claude/commands/test.md << 'EOF'
+---
+description: Run all unit tests
+allowed-tools: mcp__xcodebuildmcp__*
+---
+Run all tests using `mcp__xcodebuildmcp__test_sim_name_proj`.
+Summarize results: total, passed, failed.
+For failures show test name, expected vs actual, and a fix.
+EOF</code></pre>
+    </div>
+
+    <h3><span class="sub-step">5d</span> — Create the checkpoint command</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">.claude/commands/checkpoint.md</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cat > .claude/commands/checkpoint.md << 'EOF'
+---
+description: Save current progress with a git commit
+---
+Run: git add -A && git commit -m "checkpoint: [brief description]"
+Summarize what was committed.
+EOF</code></pre>
+    </div>
+
+    <h3><span class="sub-step">5e</span> — Verify and commit</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Check files and commit</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>ls -la .claude/commands/
+<span class="comment"># Should show: build.md  test.md  checkpoint.md</span>
+
+git add .claude/
+git commit -m "add Claude Code slash commands"</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 6 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step6">
+    <div class="step-label">Step 6 — Optional <span class="step-time">· 10 minutes</span></div>
+    <span class="section-icon">📱</span>
+    <h2>iOS Simulator <em>Skill</em></h2>
+    <p>Adds deeper simulator interaction — tapping UI elements, accessibility audits, visual testing. Skip this if you only need Claude for code generation and builds.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Install the skill</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Create skills directory</span>
+mkdir -p ~/.claude/skills
+
+<span class="comment"># Clone the skill</span>
+git clone https://github.com/conorluddy/ios-simulator-skill.git \
+  ~/.claude/skills/ios-simulator-skill
+
+<span class="comment"># Verify</span>
+ls ~/.claude/skills/ios-simulator-skill/SKILL.md</code></pre>
+    </div>
+
+    <p>Restart Claude Code. The skill loads automatically. Test it by asking:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Test in a Claude session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>Run a health check on my iOS simulator setup</code></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 7 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step7">
+    <div class="step-label">Step 7 <span class="step-time">· Daily use</span></div>
+    <span class="section-icon">🔄</span>
+    <h2>Daily <em>Workflow</em></h2>
+    <p>Here's how to use everything together, every day.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Starting a session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># 1. Open Terminal (Cmd + Space → "Terminal" → Enter)</span>
+
+<span class="comment"># 2. Navigate to your project</span>
+cd ~/path/to/your/ios-project
+
+<span class="comment"># 3. Start a safe Claude session</span>
+clauded</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Give Claude a well-scoped task</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>Add a ProfileView with name, email, and avatar using SwiftUI.
+Follow the existing MVVM pattern in the project.
+Create a ProfileViewModel with @Published properties.
+Write unit tests for the ViewModel.</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">When Claude finishes — review and decide</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># See what files changed</span>
+git status
+
+<span class="comment"># See actual changes line by line</span>
+git diff HEAD
+
+<span class="comment"># If everything looks good — commit it</span>
+git add -A && git commit -m "feat: add ProfileView"
+
+<span class="comment"># If something went wrong — undo EVERYTHING</span>
+git reset --hard HEAD</code></pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>Things you still do in Xcode manually:</strong> Add new files to the project (drag into navigator), run on physical devices, review UI visually, manage signing/provisioning, submit to App Store Connect.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- DEVCONTAINER -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="devcontainer">
+    <div class="step-label">Alternative Approach</div>
+    <span class="section-icon">🐳</span>
+    <h2>VSCode <em>DevContainer</em></h2>
+    <p>If you want full container-level isolation — where Claude literally cannot touch your host system — use this Docker-based approach with VS Code. This is the safest option but comes with a trade-off: you lose native Xcode/Simulator integration inside the container.</p>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <strong>Trade-off:</strong> iOS simulators require macOS and can't run inside a Docker container. With this approach, Claude writes code inside the container, and you build/run natively in Xcode on your Mac. You work in two windows.
+    </div>
+
+    <h3>Option A — Anthropic's Official DevContainer</h3>
+
+    <h3><span class="sub-step">A1</span> — Install prerequisites</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Install Docker and VS Code extension</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># 1. Install Docker Desktop</span>
+<span class="comment">#    Download from: https://www.docker.com/products/docker-desktop</span>
+<span class="comment">#    Open it and complete setup</span>
+
+<span class="comment"># 2. Install the Dev Containers CLI</span>
+npm install -g @devcontainers/cli
+
+<span class="comment"># 3. In VS Code, install the "Dev Containers" extension</span>
+<span class="comment">#    Cmd+Shift+X → search "Dev Containers" → Install</span></code></pre>
+    </div>
+
+    <h3><span class="sub-step">A2</span> — Set up the devcontainer</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Create .devcontainer in your project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>cd ~/path/to/your/ios-project
+mkdir -p .devcontainer
+
+cat > .devcontainer/devcontainer.json << 'DEVEOF'
+{
+  "name": "Claude Code iOS Sandbox",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/home/node/.claude,type=bind",
+    "source=${localEnv:HOME}/.claude.json,target=/home/node/.claude.json,type=bind"
+  ],
+  "forwardPorts": [],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code"
+      ]
+    }
+  }
+}
+DEVEOF</code></pre>
+    </div>
+
+    <h3><span class="sub-step">A3</span> — Open in container</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Launch the container</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Option 1: VS Code</span>
+<span class="comment"># Open VS Code → Cmd+Shift+P → "Reopen in Container"</span>
+
+<span class="comment"># Option 2: CLI</span>
+devcontainer up --workspace-folder .
+devcontainer exec --workspace-folder . claude --dangerously-skip-permissions</code></pre>
+    </div>
+
+    <h3>Option B — Trail of Bits DevContainer (Maximum Security)</h3>
+    <p>Built specifically for running Claude Code in bypass mode safely.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Install Trail of Bits devc tool</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="comment"># Install the devc tool</span>
+npm install -g @devcontainers/cli
+git clone https://github.com/trailofbits/claude-code-devcontainer ~/.claude-devcontainer
+~/.claude-devcontainer/install.sh self-install
+
+<span class="comment"># Navigate to your project and set up</span>
+cd ~/path/to/your/ios-project
+devc .
+
+<span class="comment"># Start the container</span>
+devc up
+
+<span class="comment"># Open a shell inside</span>
+devc shell
+
+<span class="comment"># Run Claude inside the container</span>
+claude --dangerously-skip-permissions</code></pre>
+    </div>
+
+    <h3>Option C — Quick Docker One-Liner</h3>
+    <p>Maximum isolation, zero config. Network disabled to prevent data exfiltration.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Docker one-liner with network disabled</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>docker run -it --rm \
+  -v $(pwd):/workspace \
+  -v ~/.claude:/root/.claude \
+  -v ~/.claude.json:/root/.claude.json \
+  --network none \
+  node:20 \
+  bash -c "npm i -g @anthropic-ai/claude-code && cd /workspace && claude --dangerously-skip-permissions"</code></pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>The hybrid workflow:</strong> Terminal 1 (container) — Claude writes and refactors code. Terminal 2 (your Mac) — you build and run in Xcode. Claude makes changes in the mounted workspace, and you build natively.
+    </div>
+
+    <h3>DevContainer Comparison</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Approach</th><th>Setup Time</th><th>Security</th><th>Xcode Integration</th></tr></thead>
+        <tbody>
+          <tr><td>Native + guardrails (Steps 1–7)</td><td>45 min</td><td>Good</td><td>Full</td></tr>
+          <tr><td>Option A — VS Code DevContainer</td><td>15 min</td><td>Strong</td><td>Split workflow</td></tr>
+          <tr><td>Option B — Trail of Bits</td><td>20 min</td><td>Maximum</td><td>Split workflow</td></tr>
+          <tr><td>Option C — Docker one-liner</td><td>2 min</td><td>Strong</td><td>Split workflow</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- REFERENCE -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="reference">
+    <span class="section-icon">📖</span>
+    <h2>Quick <em>Reference</em></h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>clauded</code></td><td>Start a safe Claude session (auto-checkpoints first)</td></tr>
+          <tr><td><code>git reset --hard HEAD</code></td><td>Undo everything Claude did since checkpoint</td></tr>
+          <tr><td><code>git diff HEAD</code></td><td>Review what Claude changed</td></tr>
+          <tr><td><code>/build</code></td><td>Build the project (inside session)</td></tr>
+          <tr><td><code>/test</code></td><td>Run all tests (inside session)</td></tr>
+          <tr><td><code>/checkpoint</code></td><td>Save progress as git commit (inside session)</td></tr>
+          <tr><td><code>/exit</code></td><td>Leave a Claude Code session</td></tr>
+          <tr><td><code>source ~/.zshrc</code></td><td>Reload shell config after editing</td></tr>
+          <tr><td><code>open ~/.claude/settings.json</code></td><td>Edit permission whitelist</td></tr>
+          <tr><td><code>open CLAUDE.md</code></td><td>Edit project guardrails</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- TROUBLESHOOTING -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="troubleshoot">
+    <span class="section-icon">🩺</span>
+    <h2>Trouble<em>shooting</em></h2>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">"clauded: command not found" <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Your shell didn't load the alias. Run:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code>source ~/.zshrc
+
+<span class="comment"># Still not found? Check the alias is in the file:</span>
+grep "clauded" ~/.zshrc
+
+<span class="comment"># If nothing prints, the alias wasn't saved. Repeat Step 1.</span></code></pre>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">"Invalid JSON" when validating settings.json <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Open the file and check for common mistakes:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code>open ~/.claude/settings.json</code></pre>
+        </div>
+        <p>Common issues: missing comma after a line, extra comma after the last item in a list, mismatched brackets or quotes.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">XcodeBuildMCP tools not found in a session <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Make sure you installed it with <code>claude mcp add</code> (Step 4b), not just npm. Close your Claude session and open a new one — the MCP server loads on session start.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Claude still asks for permission on allowed commands <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Some commands may not match the whitelist patterns exactly. Add them:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code>open ~/.claude/settings.json
+
+<span class="comment"># Add the command to the "allow" array, e.g.:</span>
+<span class="comment"># "Bash(swiftlint:*)"</span>
+<span class="comment"># Save and restart Claude Code.</span></code></pre>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Claude modified my .pbxproj despite CLAUDE.md <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Rare but possible. This is exactly why Step 1 exists:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code>git reset --hard HEAD</code></pre>
+        </div>
+        <p>Then add a stronger instruction to your CLAUDE.md. You can also add a deny rule: <code>"Edit(**/*.pbxproj)"</code></p>
+      </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Docker container can't access Claude credentials <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Make sure the mount paths are correct. The <code>~/.claude</code> directory and <code>~/.claude.json</code> file must exist on your host before mounting:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code>ls ~/.claude.json   <span class="comment"># Should exist</span>
+ls ~/.claude/       <span class="comment"># Should exist</span>
+
+<span class="comment"># If missing, log in to Claude first outside the container:</span>
+claude</code></pre>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- XCODE 26 -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="xcode26">
+    <span class="section-icon">🔮</span>
+    <h2>Xcode 26 + <em>Claude</em></h2>
+    <p>Apple's Xcode Coding Intelligence feature (introduced in Xcode 16) already supports third-party models including Claude through the Intelligence settings panel. If Xcode 26 deepens this integration to allow Claude Opus 4.6 as a native coding intelligence provider, you'll get the benefit of Xcode's own sandboxing around Claude's actions — the IDE itself would control what Claude can and can't do.</p>
+    <p>Until then, this guide gives you the same practical outcome: fast, autonomous Claude-powered iOS development with guardrails that prevent catastrophic mistakes. The git checkpoint + XcodeBuildMCP combination is the closest you can get to container-level safety while keeping full native Xcode/Simulator access.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Last updated February 2026 · Built for the Apple developer community</p>
+  </footer>
+</div>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0})" aria-label="Back to top">↑</button>
+
+<script>
+// ── Theme ──
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  document.getElementById('darkBtn').classList.toggle('active', t === 'dark');
+  document.getElementById('lightBtn').classList.toggle('active', t === 'light');
+}
+setTheme(localStorage.getItem('theme') || 'dark');
+
+// ── Copy ──
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── FAQ Toggle ──
+function toggleFaq(el) {
+  const answer = el.querySelector('.faq-answer');
+  const isOpen = el.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(item => {
+    item.classList.remove('open');
+    item.querySelector('.faq-answer').style.maxHeight = null;
+  });
+  if (!isOpen) {
+    el.classList.add('open');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+  }
+}
+
+// ── Mobile Sidebar ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.sidebar-link').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+
+// ── Back to Top ──
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 400);
+});
+
+// ── Active sidebar link on scroll ──
+const sections = document.querySelectorAll('.section');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      sidebarLinks.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
