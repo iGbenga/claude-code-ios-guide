@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code iOS Safety Guide</title>
-<meta name="description" content="Run Claude Code safely with Xcode and iOS development. Step-by-step setup for permissions, guardrails, XcodeBuildMCP, and DevContainers.">
+<title>Claude Code Xcode Safety Guide</title>
+<meta name="description" content="Run Claude Code safely with Xcode for iOS, watchOS, tvOS, visionOS, and macOS development. Step-by-step setup for permissions, guardrails, hooks, XcodeBuildMCP, and DevContainers.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -910,7 +910,7 @@ mark {
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo">claude code</div>
-    <div class="sidebar-title">iOS Safety Guide</div>
+    <div class="sidebar-title">Xcode Safety Guide</div>
   </div>
 
   <div class="sidebar-group">
@@ -955,8 +955,8 @@ mark {
 
   <!-- Hero -->
   <header class="hero" id="top">
-    <h1>Claude Code <span>iOS Safety Guide</span></h1>
-    <p>Run Claude Code autonomously for fast iOS development — without risking file destruction or project corruption. Step-by-step setup with every terminal command spelled out.</p>
+    <h1>Claude Code <span>Xcode Safety Guide</span></h1>
+    <p>Run Claude Code autonomously for fast Apple platform development — iOS, watchOS, tvOS, visionOS, and macOS — without risking file destruction or project corruption. Step-by-step setup with every terminal command spelled out.</p>
     <div class="callout danger" style="margin-top:1.25rem;">
       <span class="callout-icon">🚨</span>
       <strong>About <code>--dangerously-skip-permissions</code>:</strong> This flag disables ALL built-in permission prompts, including <code>settings.json</code> allow/deny rules. When active, Claude can execute any command without asking. This guide provides external guardrails (git checkpoints, hooks, CLAUDE.md) that work regardless of this flag.
@@ -1029,13 +1029,13 @@ mark {
   <section class="section" id="choose">
     <span class="section-icon">🧭</span>
     <h2>Choose Your <em>Path</em></h2>
-    <p>Two approaches to running Claude Code safely for iOS development. Pick one based on your needs.</p>
+    <p>Two approaches to running Claude Code safely for Xcode-based development. Pick one based on your needs.</p>
 
     <div class="path-grid">
       <a href="#step1" class="path-card" style="text-decoration:none;">
         <div class="path-icon">🛡️</div>
         <h4>Native Xcode Setup</h4>
-        <p>Full Xcode and Simulator integration. Claude runs directly on your Mac with layered guardrails — git checkpoints, hooks, permissions, and CLAUDE.md rules.</p>
+        <p>Full Xcode and Simulator integration for all Apple platforms. Claude runs directly on your Mac with layered guardrails — git checkpoints, hooks, permissions, and CLAUDE.md rules.</p>
         <span class="path-tag">Recommended · Steps 1–7</span>
       </a>
       <a href="#devcontainer" class="path-card" style="text-decoration:none;">
@@ -1094,7 +1094,7 @@ alias clauded='git add -A && git commit -m "pre-claude checkpoint $(date +%H:%M)
     <p>From now on, start every Claude session with <code>clauded</code> instead of <code>claude</code>:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Start a safe session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code>cd ~/path/to/your/ios-project
+      <pre><code>cd ~/path/to/your/xcode-project
 clauded</code></pre>
     </div>
 
@@ -1195,9 +1195,10 @@ open ~/.claude/settings.json</code></pre>
     <p>Save the file (<strong>Cmd + S</strong>), close TextEdit, then validate the JSON:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Validate JSON syntax</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code>python3 -c "import json; json.load(open('$HOME/.claude/settings.json')); print('Valid JSON')"</code></pre>
+      <pre><code><span class="comment"># Strip // comments before validating (Claude Code supports JSONC, but python doesn't)</span>
+sed 's|//.*||' ~/.claude/settings.json | python3 -c "import sys,json; json.load(sys.stdin); print('Valid JSON')"</code></pre>
     </div>
-    <p>If you see <strong>"Valid JSON"</strong>, you're good. If you see an error, open the file and check for missing commas or brackets.</p>
+    <p>If you see <strong>"Valid JSON"</strong>, you're good. If you see an error, open the file and check for missing commas or brackets. Note: the <code>//</code> comments in the config above are valid — Claude Code supports JSONC (JSON with Comments).</p>
 
     <div class="callout tip">
       <span class="callout-icon">💡</span>
@@ -1216,7 +1217,7 @@ open ~/.claude/settings.json</code></pre>
 
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <strong>Why hooks over deny rules?</strong> A <code>PreToolUse</code> hook intercepts the actual tool invocation and can inspect the full command. Deny rules only match the first token of a Bash command, so <code>find . -exec rm {} \;</code> bypasses <code>Bash(rm:*)</code>. Hooks catch everything.
+      <strong>Why hooks over deny rules?</strong> A <code>PreToolUse</code> hook intercepts the actual tool invocation and receives the full command as JSON via stdin. Deny rules only match the first token of a Bash command, so <code>find . -exec rm {} \;</code> bypasses <code>Bash(rm:*)</code>. Hooks catch everything.
     </div>
 
     <h3><span class="sub-step">2b.1</span> — Add hooks to your settings</h3>
@@ -1232,7 +1233,7 @@ open ~/.claude/settings.json</code></pre>
         <span class="string">"matcher"</span>: <span class="string">"Bash"</span>,
         <span class="string">"hooks"</span>: [{
           <span class="string">"type"</span>: <span class="string">"command"</span>,
-          <span class="string">"command"</span>: <span class="string">"echo \"$CLAUDE_TOOL_INPUT\" | grep -qiE '\\brm\\b|\\brmdir\\b|> /dev/null' && echo 'BLOCKED: destructive command detected' >&2 && exit 2 || exit 0"</span>
+          <span class="string">"command"</span>: <span class="string">"jq -r '.tool_input.command // empty' | grep -qiE '\\brm\\b|\\brmdir\\b' &amp;&amp; echo 'BLOCKED: destructive command detected' &gt;&amp;2 &amp;&amp; exit 2 || exit 0"</span>
         }]
       },
       {
@@ -1240,7 +1241,7 @@ open ~/.claude/settings.json</code></pre>
         <span class="string">"matcher"</span>: <span class="string">"Edit"</span>,
         <span class="string">"hooks"</span>: [{
           <span class="string">"type"</span>: <span class="string">"command"</span>,
-          <span class="string">"command"</span>: <span class="string">"echo \"$CLAUDE_TOOL_INPUT\" | grep -q '.pbxproj' && echo 'BLOCKED: .pbxproj edit' >&2 && exit 2 || exit 0"</span>
+          <span class="string">"command"</span>: <span class="string">"jq -r '.tool_input.file_path // empty' | grep -q '.pbxproj' &amp;&amp; echo 'BLOCKED: .pbxproj edit' &gt;&amp;2 &amp;&amp; exit 2 || exit 0"</span>
         }]
       }
     ],
@@ -1250,7 +1251,7 @@ open ~/.claude/settings.json</code></pre>
         <span class="string">"matcher"</span>: <span class="string">"Write|Edit"</span>,
         <span class="string">"hooks"</span>: [{
           <span class="string">"type"</span>: <span class="string">"command"</span>,
-          <span class="string">"command"</span>: <span class="string">"echo \"$CLAUDE_TOOL_INPUT\" | grep -q '.swift' && which swiftformat > /dev/null && swiftformat \"$(echo $CLAUDE_TOOL_INPUT | grep -oE '/[^ ]*\\.swift')\" --quiet || exit 0"</span>
+          <span class="string">"command"</span>: <span class="string">"FILE=$(jq -r '.tool_input.file_path // empty'); echo \"$FILE\" | grep -q '.swift' &amp;&amp; which swiftformat &gt; /dev/null 2&gt;&amp;1 &amp;&amp; swiftformat \"$FILE\" --quiet || exit 0"</span>
         }]
       }
     ]
@@ -1286,7 +1287,12 @@ open ~/.claude/settings.json</code></pre>
 
     <div class="callout info">
       <span class="callout-icon">ℹ️</span>
-      <strong>The <code>matcher</code> field</strong> matches tool names: <code>"Bash"</code>, <code>"Edit"</code>, <code>"Write"</code>, <code>"Read"</code>. Use <code>|</code> for multiple: <code>"Write|Edit"</code>. The environment variable <code>$CLAUDE_TOOL_INPUT</code> contains the JSON input to the tool.
+      <strong>The <code>matcher</code> field</strong> matches tool names: <code>"Bash"</code>, <code>"Edit"</code>, <code>"Write"</code>, <code>"Read"</code>. Use <code>|</code> for multiple: <code>"Write|Edit"</code>. Hook input is passed as <strong>JSON via stdin</strong>, containing fields like <code>tool_input</code>, <code>tool_name</code>, and <code>session_id</code>. Use <code>jq</code> to extract fields.
+    </div>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <strong>Requires <code>jq</code>:</strong> The hook commands above use <code>jq</code> to parse JSON from stdin. Install it with <code>brew install jq</code> if you don't have it. There are also <a href="https://code.claude.com/docs/en/hooks" style="color:var(--accent);">14 hook events total</a> — the table above shows the four most relevant for safety.
     </div>
   </section>
 
@@ -1297,11 +1303,11 @@ open ~/.claude/settings.json</code></pre>
     <div class="step-label">Step 3 <span class="step-time">· 5 minutes</span></div>
     <span class="section-icon">📄</span>
     <h2>CLAUDE.md <em>Guardrails</em></h2>
-    <p>Claude reads a file called <code>CLAUDE.md</code> automatically at the start of every session and treats the contents as binding instructions. You'll create one in your iOS project.</p>
+    <p>Claude reads a file called <code>CLAUDE.md</code> automatically at the start of every session and treats the contents as binding instructions. You'll create one in your Xcode project.</p>
 
     <h3><span class="sub-step">3a</span> — Navigate to your project</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-label">Go to your iOS project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-header"><span class="code-label">Go to your Xcode project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code><span class="comment"># Replace with your actual project path</span>
 cd ~/Developer/MyApp</code></pre>
     </div>
@@ -1385,7 +1391,7 @@ git commit -m "add Claude Code project guardrails"</code></pre>
     <div class="step-label">Step 4 <span class="step-time">· 10 minutes</span></div>
     <span class="section-icon">🔧</span>
     <h2>Xcode<em>BuildMCP</em> v2</h2>
-    <p>XcodeBuildMCP (now maintained by <strong>Sentry</strong>) gives Claude 59 structured tools for building, testing, debugging, and interacting with your iOS app — instead of running raw shell commands. It supports Xcode projects, workspaces, and Swift packages.</p>
+    <p>XcodeBuildMCP (now maintained by <strong>Sentry</strong>) gives Claude 78+ structured tools for building, testing, debugging, and interacting with your app — instead of running raw shell commands. It supports Xcode projects, workspaces, and Swift packages across all Apple platforms.</p>
 
     <h3><span class="sub-step">4a</span> — Check Node.js</h3>
     <div class="code-block">
@@ -1421,13 +1427,14 @@ brew install node</code></pre>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Test inside a Claude session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code><span class="comment"># Start a Claude session in your project</span>
-cd ~/path/to/your/ios-project
+cd ~/path/to/your/xcode-project
 claude
 
-<span class="comment"># Inside the session, type:</span>
-mcp__xcodebuildmcp__list_simulators
+<span class="comment"># Inside the session, ask Claude:</span>
+List all available simulators
 
-<span class="comment"># You should see iPhone 15, iPhone 16, etc.</span>
+<span class="comment"># Claude will use XcodeBuildMCP tools automatically.</span>
+<span class="comment"># You should see iPhone 16, Apple Watch, Apple TV, etc.</span>
 <span class="comment"># Type /exit to leave</span></code></pre>
     </div>
 
@@ -1439,7 +1446,7 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
     </div>
 
     <h3><span class="sub-step">4e</span> — (Optional) Load only specific workflows</h3>
-    <p>XcodeBuildMCP v2 has 59 tools. To save context window space, load only what you need:</p>
+    <p>XcodeBuildMCP v2 has 78+ tools. To save context window space, load only what you need:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Load specific workflow groups</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code>claude mcp add --transport stdio XcodeBuildMCP \
@@ -1466,7 +1473,7 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
 
     <div class="callout info">
       <span class="callout-icon">ℹ️</span>
-      <strong>Sentry acquisition:</strong> XcodeBuildMCP was acquired by Sentry in February 2026. The npm package (<code>xcodebuildmcp</code>) remains the same. The GitHub repo moved to <code>getsentry/XcodeBuildMCP</code>. It integrates natively with Xcode 26.3's agentic coding features.
+      <strong>Sentry acquisition:</strong> XcodeBuildMCP was acquired by Sentry. The npm package (<code>xcodebuildmcp</code>) remains the same and is also available via <code>brew tap getsentry/xcodebuildmcp</code>. The GitHub repo moved to <code>getsentry/XcodeBuildMCP</code>. It integrates natively with Xcode 26.3's agentic coding features.
     </div>
   </section>
 
@@ -1481,13 +1488,13 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
 
     <div class="callout info">
       <span class="callout-icon">ℹ️</span>
-      <strong>Skills vs. slash commands:</strong> As of Claude Code v2.1.3, slash commands have been merged into the skills system. The <code>.claude/commands/</code> approach still works (backward-compatible), but the recommended path is <code>.claude/skills/</code> with <code>user-invocable: true</code>. Both approaches are shown below.
+      <strong>Skills vs. slash commands:</strong> As of Claude Code v2.1, slash commands have been merged into the skills system. The <code>.claude/commands/</code> approach still works (backward-compatible), but the recommended path is <code>.claude/skills/</code> with <code>user-invocable: true</code>. Both approaches are shown below.
     </div>
 
     <h3><span class="sub-step">5a</span> — Create the commands directory</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Create .claude/commands/</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code>cd ~/path/to/your/ios-project
+      <pre><code>cd ~/path/to/your/xcode-project
 mkdir -p .claude/commands</code></pre>
     </div>
 
@@ -1496,7 +1503,7 @@ mkdir -p .claude/commands</code></pre>
       <div class="code-header"><span class="code-label">.claude/commands/build.md</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code>cat > .claude/commands/build.md << 'EOF'
 ---
-description: Build the iOS project on simulator
+description: Build the project on simulator
 allowed-tools: mcp__xcodebuildmcp__*
 ---
 Build the project using `mcp__xcodebuildmcp__build_sim_name_proj`.
@@ -1583,7 +1590,7 @@ ls ~/.claude/skills/ios-simulator-skill/SKILL.md</code></pre>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Starting a session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code><span class="comment"># 1. Navigate to your project</span>
-cd ~/path/to/your/ios-project
+cd ~/path/to/your/xcode-project
 
 <span class="comment"># 2. Create a feature branch (isolate Claude's work)</span>
 git checkout -b claude/profile-view
@@ -1602,7 +1609,7 @@ clauded</code></pre>
       <div class="code-header"><span class="code-label">Example prompt</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code>Add a ProfileView with name, email, and avatar using SwiftUI.
 Follow the existing MVVM pattern in the project.
-Create a ProfileViewModel with @Published properties.
+Create a ProfileViewModel using @Observable.
 Write unit tests for the ViewModel.</code></pre>
     </div>
 
@@ -1628,7 +1635,7 @@ git checkout main && git merge claude/profile-view
 git checkout main && git branch -D claude/profile-view</code></pre>
     </div>
 
-    <h3><span class="sub-step">7d</span> — iOS code review checklist</h3>
+    <h3><span class="sub-step">7d</span> — Swift code review checklist</h3>
     <p>When reviewing Claude's Swift code, watch for these common issues:</p>
     <ul class="checklist">
       <li>Force-unwrapped optionals (<code>!</code>) — prefer <code>guard let</code> or <code>if let</code></li>
@@ -1642,7 +1649,7 @@ git checkout main && git branch -D claude/profile-view</code></pre>
     </ul>
 
     <h3><span class="sub-step">7e</span> — Managing context in long sessions</h3>
-    <p>Large iOS projects can fill Claude's context window quickly. Tips to manage this:</p>
+    <p>Large Xcode projects can fill Claude's context window quickly. Tips to manage this:</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Technique</th><th>How</th></tr></thead>
@@ -1672,7 +1679,7 @@ git checkout main && git branch -D claude/profile-view</code></pre>
 
     <div class="callout warning">
       <span class="callout-icon">⚠️</span>
-      <strong>Trade-off:</strong> iOS simulators require macOS and can't run inside a Docker container. With this approach, Claude writes code inside the container, and you build/run natively in Xcode on your Mac. You work in two windows.
+      <strong>Trade-off:</strong> Apple platform simulators require macOS and can't run inside a Docker container. With this approach, Claude writes code inside the container, and you build/run natively in Xcode on your Mac. You work in two windows.
     </div>
 
     <div class="pill-tabs" data-group="devcontainer">
@@ -1691,12 +1698,12 @@ npm install -g @devcontainers/cli
       </div>
       <div class="code-block">
         <div class="code-header"><span class="code-label">2. Create .devcontainer in your project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-        <pre><code>cd ~/path/to/your/ios-project
+        <pre><code>cd ~/path/to/your/xcode-project
 mkdir -p .devcontainer
 
 cat > .devcontainer/devcontainer.json << 'DEVEOF'
 {
-  "name": "Claude Code iOS Sandbox",
+  "name": "Claude Code Xcode Sandbox",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
@@ -1733,7 +1740,7 @@ git clone https://github.com/trailofbits/claude-code-devcontainer ~/.claude-devc
 ~/.claude-devcontainer/install.sh self-install
 
 <span class="comment"># Set up, start, and run</span>
-cd ~/path/to/your/ios-project
+cd ~/path/to/your/xcode-project
 devc .
 devc up
 devc shell
@@ -1784,7 +1791,7 @@ claude --dangerously-skip-permissions</code></pre>
   <section class="section" id="builders">
     <span class="section-icon">🛠</span>
     <h2>Config <em>Builders</em></h2>
-    <p>Generate customized configuration files for your iOS project.</p>
+    <p>Generate customized configuration files for your Xcode project.</p>
 
     <div class="builder">
       <h3>CLAUDE.md Builder</h3>
@@ -1978,7 +1985,7 @@ python3 -c "import json; json.load(open('$HOME/.claude/settings.json')); print('
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">Context window full — Claude losing track of earlier work <span class="faq-arrow">▼</span></div>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Large iOS projects fill context quickly. Solutions:</p>
+        <p>Large Xcode projects fill context quickly. Solutions:</p>
         <div class="code-block">
           <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
           <pre><code><span class="comment"># Inside a Claude session:</span>
@@ -2022,7 +2029,7 @@ python3 -c "import json; json.load(open('$HOME/.claude/settings.json')); print('
 
   <!-- Footer -->
   <footer class="footer">
-    <p>Last updated February 2026 · Built for the Apple developer community · XcodeBuildMCP v2 · Claude Code v2.1+</p>
+    <p>Last updated February 2026 · Built for the Apple developer community · Covers iOS, watchOS, tvOS, visionOS, macOS · XcodeBuildMCP v2 · Claude Code v2.1+</p>
   </footer>
 </div>
 
