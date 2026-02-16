@@ -54,7 +54,7 @@ The guide is organized into sequential steps with supporting sections:
 7. **Step 3: CLAUDE.md Guardrails** (`#step3`) — Project rules template
 8. **Step 4: XcodeBuildMCP v2** (`#step4`) — MCP server for Xcode builds (Sentry)
 9. **Step 5: Skills & Commands** (`#step5`) — Custom Claude skills/commands
-10. **Step 6: Simulator Skill** (`#step6`) — iOS simulator interaction
+10. **Step 6: Simulator Skill** (`#step6`) — iOS Simulator interaction
 11. **Step 7: Daily Workflow** (`#step7`) — Branch isolation, code review, context mgmt
 12. **DevContainer** (`#devcontainer`) — Docker-based alternatives (tabbed)
 13. **Config Builders** (`#builders`) — Interactive CLAUDE.md generator
