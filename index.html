@@ -7,11 +7,12 @@
 <meta name="description" content="Run Claude Code safely with Xcode and iOS development. Step-by-step setup for permissions, guardrails, XcodeBuildMCP, and DevContainers.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 :root {
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
 }
 
 [data-theme="dark"] {
@@ -50,38 +51,38 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-code: #f1f5f9;
-  --bg-sidebar: #f1f5f9;
-  --bg-hover: #e2e8f0;
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --accent: #0891b2;
-  --accent-dim: rgba(8,145,178,0.08);
-  --accent-green: #059669;
-  --accent-green-dim: rgba(5,150,105,0.08);
-  --accent-orange: #ea580c;
-  --accent-orange-dim: rgba(234,88,12,0.08);
-  --accent-red: #dc2626;
-  --accent-red-dim: rgba(220,38,38,0.08);
-  --accent-purple: #7c3aed;
-  --accent-purple-dim: rgba(124,58,237,0.08);
-  --border: #e2e8f0;
-  --border-bright: #cbd5e1;
-  --code-keyword: #7c3aed;
-  --code-string: #059669;
-  --code-comment: #94a3b8;
-  --code-flag: #0891b2;
-  --scrollbar-track: #f1f5f9;
-  --scrollbar-thumb: #cbd5e1;
-  --shadow: 0 4px 24px rgba(0,0,0,0.08);
-  --hot-bg: rgba(234,88,12,0.1);
-  --hot-text: #ea580c;
-  --badge-new-bg: rgba(8,145,178,0.1);
-  --badge-new-text: #0891b2;
+  --bg-primary: #f0e6d6;
+  --bg-secondary: #e8dcc8;
+  --bg-card: #e8dcc8;
+  --bg-code: #e2d5c3;
+  --bg-sidebar: #e8dcc8;
+  --bg-hover: #ddd0ba;
+  --text-primary: #2a2218;
+  --text-secondary: #5c4f3a;
+  --text-muted: #8a7b65;
+  --accent: #5c4020;
+  --accent-dim: rgba(92,64,32,0.1);
+  --accent-green: #5c4020;
+  --accent-green-dim: rgba(92,64,32,0.08);
+  --accent-orange: #5c4020;
+  --accent-orange-dim: rgba(92,64,32,0.08);
+  --accent-red: #5c4020;
+  --accent-red-dim: rgba(92,64,32,0.08);
+  --accent-purple: #5c4020;
+  --accent-purple-dim: rgba(92,64,32,0.08);
+  --border: #c4b49a;
+  --border-bright: #b8a88e;
+  --code-keyword: #5c4020;
+  --code-string: #5c4020;
+  --code-comment: #8a7b65;
+  --code-flag: #5c4020;
+  --scrollbar-track: #e8dcc8;
+  --scrollbar-thumb: #c4b49a;
+  --shadow: 0 4px 24px rgba(42,34,24,0.1);
+  --hot-bg: rgba(92,64,32,0.12);
+  --hot-text: #5c4020;
+  --badge-new-bg: rgba(92,64,32,0.12);
+  --badge-new-text: #5c4020;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -246,9 +247,10 @@ body {
 }
 
 .hero h1 {
-  font-size: 2.4rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--font-serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  line-height: 1.1;
   margin-bottom: 0.75rem;
 }
 
@@ -288,8 +290,9 @@ body {
 }
 
 .section h2 {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 400;
   margin-bottom: 0.5rem;
   line-height: 1.3;
 }
@@ -306,8 +309,9 @@ body {
 }
 
 .section h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 400;
   margin: 2rem 0 0.75rem;
   color: var(--text-primary);
 }
@@ -594,6 +598,284 @@ tbody tr:hover { background: var(--bg-hover); }
   font-size: 0.88rem;
 }
 
+/* ── Section Headers (yt-dlp style) ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-header .section-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.section-header h2 { margin-bottom: 0; }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section { animation: fadeUp 0.5s ease-out both; }
+
+/* ── Commonly Used Badge ── */
+.popular-wrap { position: relative; margin-top: 24px; }
+.popular-badge {
+  position: absolute;
+  top: 0;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--hot-bg);
+  color: var(--hot-text);
+  padding: 3px 12px;
+  border-radius: 0 0 4px 4px;
+  z-index: 2;
+  line-height: 1.4;
+}
+.popular-wrap .code-header { padding-top: 26px; }
+
+/* ── Mark tag ── */
+mark {
+  background: var(--accent-dim);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+/* ── Search Bar ── */
+.search-bar {
+  position: relative;
+  margin-bottom: 16px;
+}
+.search-bar input {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 10px 16px 10px 40px;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-bar input:focus { border-color: var(--accent); }
+.search-bar input::placeholder { color: var(--text-muted); }
+.search-bar .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* ── Pill Tabs (for DevContainer) ── */
+.pill-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+.pill-tab {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pill-tab:hover { color: var(--text-primary); }
+.pill-tab.active { background: var(--accent); color: var(--bg-primary); font-weight: 600; }
+
+/* ── Builder ── */
+.builder {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.builder h3 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+.builder p.sub {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 20px;
+}
+.builder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.builder-field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.builder-field select,
+.builder-field input[type="text"] {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.builder-field select:focus,
+.builder-field input:focus { border-color: var(--accent); }
+.builder-field select option { background: var(--bg-secondary); }
+
+.toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.toggle-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.toggle-chip:hover { border-color: var(--text-muted); }
+.toggle-chip.on { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.toggle-chip .check { opacity: 0; transition: opacity 0.2s; }
+.toggle-chip.on .check { opacity: 1; }
+
+.output-box {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  word-break: break-all;
+  position: relative;
+  min-height: 50px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+.output-copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.output-copy:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Path Choice Cards ── */
+.path-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.path-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.path-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.path-card .path-icon { font-size: 2rem; margin-bottom: 10px; }
+.path-card h4 {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+.path-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+.path-card .path-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* ── Checklist ── */
+.checklist { list-style: none; margin: 12px 0; }
+.checklist li {
+  padding: 6px 0;
+  padding-left: 24px;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+.checklist li::before {
+  content: '☐';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .sidebar { transform: translateX(-100%); width: 280px; }
@@ -608,6 +890,8 @@ tbody tr:hover { background: var(--bg-hover); }
   .hero h1 { font-size: 1.5rem; }
   .code-block pre { font-size: 0.78rem; padding: 0.75rem 1rem; }
   .hero-meta { flex-direction: column; gap: 0.5rem; }
+  .path-grid { grid-template-columns: 1fr; }
+  .builder-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -633,29 +917,36 @@ tbody tr:hover { background: var(--bg-hover); }
     <div class="sidebar-group-title">Getting Started</div>
     <a href="#prereqs" class="sidebar-link"><span class="icon">📋</span> Prerequisites</a>
     <a href="#overview" class="sidebar-link"><span class="icon">🗺️</span> Overview</a>
+    <a href="#choose" class="sidebar-link"><span class="icon">🧭</span> Choose Your Path</a>
   </div>
 
   <div class="sidebar-group">
     <div class="sidebar-group-title">Native Xcode Setup</div>
     <a href="#step1" class="sidebar-link"><span class="icon">🔒</span> Git Checkpoint <span class="badge hot">critical</span></a>
-    <a href="#step2" class="sidebar-link"><span class="icon">🛡️</span> Permission Whitelist <span class="badge hot">critical</span></a>
+    <a href="#step2" class="sidebar-link"><span class="icon">🛡️</span> Permissions <span class="badge hot">critical</span></a>
+    <a href="#step2b" class="sidebar-link"><span class="icon">🪝</span> Safety Hooks <span class="badge hot">critical</span></a>
     <a href="#step3" class="sidebar-link"><span class="icon">📄</span> CLAUDE.md Guardrails</a>
-    <a href="#step4" class="sidebar-link"><span class="icon">🔧</span> XcodeBuildMCP</a>
-    <a href="#step5" class="sidebar-link"><span class="icon">⚡</span> Slash Commands</a>
+    <a href="#step4" class="sidebar-link"><span class="icon">🔧</span> XcodeBuildMCP v2</a>
+    <a href="#step5" class="sidebar-link"><span class="icon">⚡</span> Skills &amp; Commands</a>
     <a href="#step6" class="sidebar-link"><span class="icon">📱</span> Simulator Skill</a>
     <a href="#step7" class="sidebar-link"><span class="icon">🔄</span> Daily Workflow</a>
   </div>
 
   <div class="sidebar-group">
     <div class="sidebar-group-title">Container Approach</div>
-    <a href="#devcontainer" class="sidebar-link"><span class="icon">🐳</span> VSCode DevContainer <span class="badge new">alt</span></a>
+    <a href="#devcontainer" class="sidebar-link"><span class="icon">🐳</span> DevContainer <span class="badge new">alt</span></a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Tools</div>
+    <a href="#builders" class="sidebar-link"><span class="icon">🛠</span> Config Builders <span class="badge new">new</span></a>
   </div>
 
   <div class="sidebar-group">
     <div class="sidebar-group-title">Reference</div>
     <a href="#reference" class="sidebar-link"><span class="icon">📖</span> Quick Reference</a>
     <a href="#troubleshoot" class="sidebar-link"><span class="icon">🩺</span> Troubleshooting</a>
-    <a href="#xcode26" class="sidebar-link"><span class="icon">🔮</span> Xcode 26 + Claude</a>
+    <a href="#xcode26" class="sidebar-link"><span class="icon">🔮</span> Xcode 26.3</a>
   </div>
 </nav>
 
@@ -665,7 +956,11 @@ tbody tr:hover { background: var(--bg-hover); }
   <!-- Hero -->
   <header class="hero" id="top">
     <h1>Claude Code <span>iOS Safety Guide</span></h1>
-    <p>Run <code>claude --dangerously-skip-permissions</code> for fast, autonomous iOS development — without risking file destruction or project corruption. Step-by-step setup with every terminal command spelled out.</p>
+    <p>Run Claude Code autonomously for fast iOS development — without risking file destruction or project corruption. Step-by-step setup with every terminal command spelled out.</p>
+    <div class="callout danger" style="margin-top:1.25rem;">
+      <span class="callout-icon">🚨</span>
+      <strong>About <code>--dangerously-skip-permissions</code>:</strong> This flag disables ALL built-in permission prompts, including <code>settings.json</code> allow/deny rules. When active, Claude can execute any command without asking. This guide provides external guardrails (git checkpoints, hooks, CLAUDE.md) that work regardless of this flag.
+    </div>
     <div class="hero-meta">
       <div class="hero-meta-item"><span class="icon">⏱️</span> ~45 minutes total setup</div>
       <div class="hero-meta-item"><span class="icon">🎯</span> 7 layers of protection</div>
@@ -722,9 +1017,33 @@ tbody tr:hover { background: var(--bg-hover); }
       </table>
     </div>
 
-    <div class="callout warning">
-      <span class="callout-icon">⚠️</span>
-      <strong>Known limitation:</strong> Some versions of Claude Code have bugs where <code>deny</code> rules don't consistently fire for Bash commands. This is why the git checkpoint (Step 1) is your primary safety net, not the permission config alone.
+    <div class="callout danger">
+      <span class="callout-icon">🚨</span>
+      <strong>Critical limitation:</strong> As of February 2026, <code>deny</code> rules in <code>settings.json</code> are <strong>not reliably enforced</strong>. Commands like <code>find . -exec rm {} \;</code> or <code>bash -c "rm -rf ..."</code> bypass <code>Bash(rm:*)</code> deny patterns. Additionally, <code>--dangerously-skip-permissions</code> bypasses the entire permission system. This is why the git checkpoint (Step 1) and hooks (Step 2b) are your real safety nets — not the permission config alone.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- CHOOSE YOUR PATH -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="choose">
+    <span class="section-icon">🧭</span>
+    <h2>Choose Your <em>Path</em></h2>
+    <p>Two approaches to running Claude Code safely for iOS development. Pick one based on your needs.</p>
+
+    <div class="path-grid">
+      <a href="#step1" class="path-card" style="text-decoration:none;">
+        <div class="path-icon">🛡️</div>
+        <h4>Native Xcode Setup</h4>
+        <p>Full Xcode and Simulator integration. Claude runs directly on your Mac with layered guardrails — git checkpoints, hooks, permissions, and CLAUDE.md rules.</p>
+        <span class="path-tag">Recommended · Steps 1–7</span>
+      </a>
+      <a href="#devcontainer" class="path-card" style="text-decoration:none;">
+        <div class="path-icon">🐳</div>
+        <h4>Container Isolation</h4>
+        <p>Claude runs inside a Docker container and cannot touch your host system. You build natively in Xcode. Trade-off: split workflow between two terminals.</p>
+        <span class="path-tag">Maximum Security · Skip to DevContainer</span>
+      </a>
     </div>
   </section>
 
@@ -829,29 +1148,44 @@ open ~/.claude/settings.json</code></pre>
       <pre><code>{
   <span class="string">"permissions"</span>: {
     <span class="string">"allow"</span>: [
+      <span class="comment">// File tools</span>
       <span class="string">"Read(*)"</span>, <span class="string">"Write(*)"</span>, <span class="string">"Edit(*)"</span>,
+      <span class="comment">// Shell basics</span>
       <span class="string">"Bash(ls:*)"</span>, <span class="string">"Bash(mkdir:*)"</span>, <span class="string">"Bash(mv:*)"</span>,
       <span class="string">"Bash(cp:*)"</span>, <span class="string">"Bash(cat:*)"</span>, <span class="string">"Bash(head:*)"</span>,
       <span class="string">"Bash(tail:*)"</span>, <span class="string">"Bash(grep:*)"</span>, <span class="string">"Bash(rg:*)"</span>,
-      <span class="string">"Bash(find:*)"</span>, <span class="string">"Bash(git:*)"</span>, <span class="string">"Bash(swift:*)"</span>,
-      <span class="string">"Bash(swiftc:*)"</span>, <span class="string">"Bash(xcodebuild:*)"</span>,
-      <span class="string">"Bash(xcrun:*)"</span>, <span class="string">"Bash(simctl:*)"</span>,
-      <span class="string">"Bash(pod:*)"</span>, <span class="string">"Bash(mint:*)"</span>, <span class="string">"Bash(spm:*)"</span>,
-      <span class="string">"Bash(brew:*)"</span>, <span class="string">"Bash(npm:*)"</span>, <span class="string">"Bash(npx:*)"</span>,
-      <span class="string">"Bash(touch:*)"</span>, <span class="string">"Bash(echo:*)"</span>, <span class="string">"Bash(sed:*)"</span>,
-      <span class="string">"Bash(awk:*)"</span>, <span class="string">"Bash(chmod:*)"</span>, <span class="string">"Bash(make:*)"</span>,
-      <span class="string">"Bash(python3:*)"</span>, <span class="string">"Bash(curl:*)"</span>,
-      <span class="string">"Bash(cd:*)"</span>, <span class="string">"Bash(wc:*)"</span>, <span class="string">"Bash(sort:*)"</span>,
-      <span class="string">"Bash(uniq:*)"</span>, <span class="string">"Bash(diff:*)"</span>,
+      <span class="string">"Bash(find:*)"</span>, <span class="string">"Bash(touch:*)"</span>, <span class="string">"Bash(echo:*)"</span>,
       <span class="string">"Bash(which:*)"</span>, <span class="string">"Bash(open:*)"</span>,
+      <span class="string">"Bash(wc:*)"</span>, <span class="string">"Bash(sort:*)"</span>, <span class="string">"Bash(uniq:*)"</span>,
+      <span class="string">"Bash(diff:*)"</span>, <span class="string">"Bash(tr:*)"</span>, <span class="string">"Bash(cut:*)"</span>,
+      <span class="string">"Bash(tee:*)"</span>, <span class="string">"Bash(env:*)"</span>,
+      <span class="string">"Bash(basename:*)"</span>, <span class="string">"Bash(dirname:*)"</span>,
+      <span class="comment">// Text processing</span>
+      <span class="string">"Bash(sed:*)"</span>, <span class="string">"Bash(awk:*)"</span>,
+      <span class="comment">// Git</span>
+      <span class="string">"Bash(git:*)"</span>,
+      <span class="comment">// Swift / Xcode toolchain</span>
+      <span class="string">"Bash(swift:*)"</span>, <span class="string">"Bash(swiftc:*)"</span>,
+      <span class="string">"Bash(xcodebuild:*)"</span>, <span class="string">"Bash(xcrun:*)"</span>,
+      <span class="string">"Bash(xcode-select:*)"</span>, <span class="string">"Bash(plutil:*)"</span>,
+      <span class="string">"Bash(swiftlint:*)"</span>, <span class="string">"Bash(swiftformat:*)"</span>,
+      <span class="comment">// Package managers</span>
+      <span class="string">"Bash(pod:*)"</span>, <span class="string">"Bash(mint:*)"</span>,
+      <span class="string">"Bash(brew install:*)"</span>, <span class="string">"Bash(brew info:*)"</span>,
+      <span class="string">"Bash(npm:*)"</span>, <span class="string">"Bash(npx:*)"</span>,
+      <span class="comment">// System</span>
+      <span class="string">"Bash(chmod:*)"</span>, <span class="string">"Bash(make:*)"</span>,
+      <span class="string">"Bash(python3:*)"</span>, <span class="string">"Bash(curl:*)"</span>,
       <span class="string">"Bash(pkill:*)"</span>
     ],
     <span class="string">"deny"</span>: [
       <span class="string">"Bash(rm:*)"</span>,
       <span class="string">"Bash(rmdir:*)"</span>,
       <span class="string">"Bash(sudo:*)"</span>,
-      <span class="string">"Bash(sudo rm:*)"</span>,
-      <span class="string">"Bash(chmod 777:*)"</span>
+      <span class="string">"Bash(bash -c:*)"</span>,
+      <span class="string">"Bash(sh -c:*)"</span>,
+      <span class="string">"Bash(chmod 777:*)"</span>,
+      <span class="string">"Edit(**/*.pbxproj)"</span>
     ]
   }
 }</code></pre>
@@ -867,7 +1201,92 @@ open ~/.claude/settings.json</code></pre>
 
     <div class="callout tip">
       <span class="callout-icon">💡</span>
-      <strong>What this does:</strong> <code>rm</code>, <code>rmdir</code>, and <code>sudo</code> are blocked. All standard dev tools (git, swift, xcodebuild, xcrun, simctl) are pre-approved so you won't get interrupted by permission prompts.
+      <strong>What this does:</strong> <code>rm</code>, <code>rmdir</code>, <code>sudo</code>, <code>bash -c</code>, and <code>.pbxproj</code> edits are blocked. Dev tools (git, swift, xcodebuild, xcrun, swiftlint, swiftformat) are pre-approved. Note: <code>brew</code> is limited to <code>brew install</code> and <code>brew info</code> only — not <code>brew uninstall</code> or <code>brew cleanup</code>.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- STEP 2b — HOOKS -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="step2b">
+    <div class="step-label">Step 2b <span class="step-time">· 10 minutes</span></div>
+    <span class="section-icon">🪝</span>
+    <h2>Safety <em>Hooks</em></h2>
+    <p>Hooks are shell commands that fire automatically before or after Claude uses a tool. Unlike <code>deny</code> rules, hooks execute deterministically and cannot be bypassed — even with <code>--dangerously-skip-permissions</code>. This is your most reliable enforcement layer.</p>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>Why hooks over deny rules?</strong> A <code>PreToolUse</code> hook intercepts the actual tool invocation and can inspect the full command. Deny rules only match the first token of a Bash command, so <code>find . -exec rm {} \;</code> bypasses <code>Bash(rm:*)</code>. Hooks catch everything.
+    </div>
+
+    <h3><span class="sub-step">2b.1</span> — Add hooks to your settings</h3>
+    <p>Open <code>~/.claude/settings.json</code> and add a <code>hooks</code> key alongside the existing <code>permissions</code> key:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">~/.claude/settings.json — add hooks</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>{
+  <span class="string">"permissions"</span>: { ... },
+  <span class="string">"hooks"</span>: {
+    <span class="string">"PreToolUse"</span>: [
+      {
+        <span class="comment">// Block destructive commands (rm, rmdir, etc.)</span>
+        <span class="string">"matcher"</span>: <span class="string">"Bash"</span>,
+        <span class="string">"hooks"</span>: [{
+          <span class="string">"type"</span>: <span class="string">"command"</span>,
+          <span class="string">"command"</span>: <span class="string">"echo \"$CLAUDE_TOOL_INPUT\" | grep -qiE '\\brm\\b|\\brmdir\\b|> /dev/null' && echo 'BLOCKED: destructive command detected' >&2 && exit 2 || exit 0"</span>
+        }]
+      },
+      {
+        <span class="comment">// Block .pbxproj modifications</span>
+        <span class="string">"matcher"</span>: <span class="string">"Edit"</span>,
+        <span class="string">"hooks"</span>: [{
+          <span class="string">"type"</span>: <span class="string">"command"</span>,
+          <span class="string">"command"</span>: <span class="string">"echo \"$CLAUDE_TOOL_INPUT\" | grep -q '.pbxproj' && echo 'BLOCKED: .pbxproj edit' >&2 && exit 2 || exit 0"</span>
+        }]
+      }
+    ],
+    <span class="string">"PostToolUse"</span>: [
+      {
+        <span class="comment">// Auto-format Swift files after edits</span>
+        <span class="string">"matcher"</span>: <span class="string">"Write|Edit"</span>,
+        <span class="string">"hooks"</span>: [{
+          <span class="string">"type"</span>: <span class="string">"command"</span>,
+          <span class="string">"command"</span>: <span class="string">"echo \"$CLAUDE_TOOL_INPUT\" | grep -q '.swift' && which swiftformat > /dev/null && swiftformat \"$(echo $CLAUDE_TOOL_INPUT | grep -oE '/[^ ]*\\.swift')\" --quiet || exit 0"</span>
+        }]
+      }
+    ]
+  }
+}</code></pre>
+    </div>
+
+    <h3><span class="sub-step">2b.2</span> — How hooks work</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Hook Event</th><th>When It Fires</th><th>Use For</th></tr></thead>
+        <tbody>
+          <tr><td><code>PreToolUse</code></td><td>Before a tool executes</td><td>Block destructive commands, prevent file edits</td></tr>
+          <tr><td><code>PostToolUse</code></td><td>After a tool completes</td><td>Auto-format code, log changes, run linters</td></tr>
+          <tr><td><code>Stop</code></td><td>When Claude finishes responding</td><td>Auto-commit changes, send notifications</td></tr>
+          <tr><td><code>SessionStart</code></td><td>When a session begins</td><td>Validate environment, check prerequisites</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3><span class="sub-step">2b.3</span> — Exit codes</h3>
+    <p>The hook's exit code controls behavior:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Exit Code</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>0</code></td><td>Allow — tool proceeds normally</td></tr>
+          <tr><td><code>2</code></td><td>Block — tool execution is prevented, stderr shown to Claude</td></tr>
+          <tr><td>Other</td><td>Error — hook failure is reported but tool may still proceed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <strong>The <code>matcher</code> field</strong> matches tool names: <code>"Bash"</code>, <code>"Edit"</code>, <code>"Write"</code>, <code>"Read"</code>. Use <code>|</code> for multiple: <code>"Write|Edit"</code>. The environment variable <code>$CLAUDE_TOOL_INPUT</code> contains the JSON input to the tool.
     </div>
   </section>
 
@@ -901,34 +1320,49 @@ open CLAUDE.md</code></pre>
       <pre><code># Project Rules for Claude Code
 
 ## Critical — Never Do These
-- NEVER modify any .pbxproj file directly. If new files need
-  to be added to the Xcode project, create the file and tell
-  me to add it in Xcode manually.
+- NEVER modify any .pbxproj file directly. Create new files
+  and tell me to add them in Xcode manually.
+- NEVER modify .xcscheme or build configuration files.
 - NEVER use rm, rm -rf, rmdir, or any file deletion command.
+- NEVER create files outside the project directory.
 - NEVER modify .gitignore without asking first.
 - NEVER touch Podfile.lock, Package.resolved, or any lockfiles.
 - NEVER modify Info.plist signing or provisioning settings.
+- NEVER add third-party dependencies without asking first.
 - NEVER run `pod install` or `swift package resolve` without asking.
+- NEVER use `open -a` to launch applications.
 
 ## Required Practices
 - Commit checkpoints after completing a feature or significant change.
 - Place new Swift files in the correct group folder.
 - Use SwiftUI for new views unless told otherwise.
+- Prefer @Observable over ObservableObject for iOS 17+ targets.
+- Use structured concurrency (async/await) over completion handlers.
+- Use #Preview macro syntax for iOS 17+ projects.
+- Add MARK: comments to organize code sections.
 - Follow existing code patterns and naming conventions.
 - Add Logger/os_log statements for complex async flows.
 - Write XCTest unit tests for new business logic.
+- When fixing a build error, fix only that error — do not refactor
+  surrounding code.
+- Maximum file length: 300 lines. Suggest splitting if exceeded.
 
 ## Build Instructions
 - Always use XcodeBuildMCP tools instead of raw xcodebuild.
-- Build: mcp__xcodebuildmcp__build_sim_name_proj
-- Test:  mcp__xcodebuildmcp__test_sim_name_proj
-- Run:   mcp__xcodebuildmcp__build_run_sim_name_proj
+- Build: simulator/build
+- Test:  simulator/test
+- Run:   simulator/build-and-run
 
 ## Project Architecture
 - Architecture: [MVVM / MVC / TCA — replace with yours]
 - Min target:   iOS [17 / 18 — replace with yours]
 - Packages:     [SPM / CocoaPods — replace with yours]
-- Main scheme:  [YourAppScheme — replace with yours]</code></pre>
+- Main scheme:  [YourAppScheme — replace with yours]
+
+## Key Directories
+- Sources/Features/ — feature modules
+- Sources/Services/ — networking, persistence
+- Tests/ — unit and UI tests</code></pre>
     </div>
 
     <div class="callout info">
@@ -950,8 +1384,8 @@ git commit -m "add Claude Code project guardrails"</code></pre>
   <section class="section" id="step4">
     <div class="step-label">Step 4 <span class="step-time">· 10 minutes</span></div>
     <span class="section-icon">🔧</span>
-    <h2>Xcode<em>BuildMCP</em></h2>
-    <p>This gives Claude structured, safe tools for building and testing your iOS app instead of running raw shell commands.</p>
+    <h2>Xcode<em>BuildMCP</em> v2</h2>
+    <p>XcodeBuildMCP (now maintained by <strong>Sentry</strong>) gives Claude 59 structured tools for building, testing, debugging, and interacting with your iOS app — instead of running raw shell commands. It supports Xcode projects, workspaces, and Swift packages.</p>
 
     <h3><span class="sub-step">4a</span> — Check Node.js</h3>
     <div class="code-block">
@@ -1004,21 +1438,35 @@ mcp__xcodebuildmcp__list_simulators
 xcode-select --install   <span class="comment"># Install if missing</span></code></pre>
     </div>
 
-    <h3>Available MCP Tools</h3>
+    <h3><span class="sub-step">4e</span> — (Optional) Load only specific workflows</h3>
+    <p>XcodeBuildMCP v2 has 59 tools. To save context window space, load only what you need:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Load specific workflow groups</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>claude mcp add --transport stdio XcodeBuildMCP \
+  --env XCODEBUILDMCP_ENABLED_WORKFLOWS=simulator,debugging \
+  -- npx -y xcodebuildmcp@latest</code></pre>
+    </div>
+
+    <h3>Available Tool Categories (v2)</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Task</th><th>MCP Tool</th></tr></thead>
+        <thead><tr><th>Category</th><th>Key Tools</th><th>What They Do</th></tr></thead>
         <tbody>
-          <tr><td>Build for simulator</td><td><code>mcp__xcodebuildmcp__build_sim_name_proj</code></td></tr>
-          <tr><td>Run tests</td><td><code>mcp__xcodebuildmcp__test_sim_name_proj</code></td></tr>
-          <tr><td>Build and run</td><td><code>mcp__xcodebuildmcp__build_run_sim_name_proj</code></td></tr>
-          <tr><td>Clean build folder</td><td><code>mcp__xcodebuildmcp__clean_proj</code></td></tr>
-          <tr><td>List simulators</td><td><code>mcp__xcodebuildmcp__list_simulators</code></td></tr>
-          <tr><td>Boot a simulator</td><td><code>mcp__xcodebuildmcp__boot_simulator</code></td></tr>
-          <tr><td>Swift package build</td><td><code>mcp__xcodebuildmcp__swift_package_build</code></td></tr>
-          <tr><td>Swift package test</td><td><code>mcp__xcodebuildmcp__swift_package_test</code></td></tr>
+          <tr><td><strong>Simulator</strong></td><td><code>simulator/build</code>, <code>simulator/build-and-run</code>, <code>simulator/test</code></td><td>Build, run, and test on iOS Simulator</td></tr>
+          <tr><td><strong>Screenshots</strong></td><td><code>simulator/screenshot</code></td><td>Capture simulator screen for visual verification</td></tr>
+          <tr><td><strong>UI Automation</strong></td><td><code>ui-automation/tap</code>, <code>ui-automation/swipe</code>, <code>ui-automation/type</code>, <code>ui-automation/long-press</code></td><td>Interact with running app UI elements</td></tr>
+          <tr><td><strong>UI Inspection</strong></td><td><code>describe_ui</code></td><td>Get full view hierarchy with frame coordinates</td></tr>
+          <tr><td><strong>Debugging</strong></td><td><code>debugging/attach</code>, <code>debugging/breakpoint</code></td><td>LLDB integration for runtime debugging</td></tr>
+          <tr><td><strong>Device</strong></td><td>Deploy/test tools</td><td>Physical device deployment over USB/Wi-Fi</td></tr>
+          <tr><td><strong>SPM</strong></td><td><code>swift_package_build</code>, <code>swift_package_test</code></td><td>Swift Package Manager operations</td></tr>
+          <tr><td><strong>Project</strong></td><td><code>clean</code>, <code>list_simulators</code>, <code>boot_simulator</code></td><td>Project management and simulator control</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <strong>Sentry acquisition:</strong> XcodeBuildMCP was acquired by Sentry in February 2026. The npm package (<code>xcodebuildmcp</code>) remains the same. The GitHub repo moved to <code>getsentry/XcodeBuildMCP</code>. It integrates natively with Xcode 26.3's agentic coding features.
     </div>
   </section>
 
@@ -1028,8 +1476,13 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
   <section class="section" id="step5">
     <div class="step-label">Step 5 <span class="step-time">· 5 minutes</span></div>
     <span class="section-icon">⚡</span>
-    <h2>Slash <em>Commands</em></h2>
+    <h2>Skills &amp; <em>Commands</em></h2>
     <p>Shortcuts you can type inside a Claude Code session. Instead of a long instruction, type <code>/build</code> or <code>/test</code>.</p>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <strong>Skills vs. slash commands:</strong> As of Claude Code v2.1.3, slash commands have been merged into the skills system. The <code>.claude/commands/</code> approach still works (backward-compatible), but the recommended path is <code>.claude/skills/</code> with <code>user-invocable: true</code>. Both approaches are shown below.
+    </div>
 
     <h3><span class="sub-step">5a</span> — Create the commands directory</h3>
     <div class="code-block">
@@ -1126,38 +1579,80 @@ ls ~/.claude/skills/ios-simulator-skill/SKILL.md</code></pre>
     <h2>Daily <em>Workflow</em></h2>
     <p>Here's how to use everything together, every day.</p>
 
+    <h3><span class="sub-step">7a</span> — Start on a dedicated branch</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Starting a session</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="comment"># 1. Open Terminal (Cmd + Space → "Terminal" → Enter)</span>
-
-<span class="comment"># 2. Navigate to your project</span>
+      <pre><code><span class="comment"># 1. Navigate to your project</span>
 cd ~/path/to/your/ios-project
+
+<span class="comment"># 2. Create a feature branch (isolate Claude's work)</span>
+git checkout -b claude/profile-view
 
 <span class="comment"># 3. Start a safe Claude session</span>
 clauded</code></pre>
     </div>
 
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>Why branch isolation?</strong> Working on a dedicated branch means Claude's changes never touch your main branch directly. Review the diff, squash-merge if good, delete the branch if bad. Much safer than working on <code>main</code>.
+    </div>
+
+    <h3><span class="sub-step">7b</span> — Give a well-scoped task</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-label">Give Claude a well-scoped task</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-header"><span class="code-label">Example prompt</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code>Add a ProfileView with name, email, and avatar using SwiftUI.
 Follow the existing MVVM pattern in the project.
 Create a ProfileViewModel with @Published properties.
 Write unit tests for the ViewModel.</code></pre>
     </div>
 
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <strong>Use plan mode for complex tasks:</strong> Press <code>Shift+Tab</code> twice to enter plan mode. Claude will explore your codebase and propose an implementation plan before writing any code. Approve or refine the plan first, then let it execute.
+    </div>
+
+    <h3><span class="sub-step">7c</span> — Review Claude's changes</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-label">When Claude finishes — review and decide</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-header"><span class="code-label">Review and decide</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code><span class="comment"># See what files changed</span>
 git status
 
 <span class="comment"># See actual changes line by line</span>
 git diff HEAD
 
-<span class="comment"># If everything looks good — commit it</span>
+<span class="comment"># If everything looks good — commit and merge</span>
 git add -A && git commit -m "feat: add ProfileView"
+git checkout main && git merge claude/profile-view
 
 <span class="comment"># If something went wrong — undo EVERYTHING</span>
-git reset --hard HEAD</code></pre>
+git checkout main && git branch -D claude/profile-view</code></pre>
+    </div>
+
+    <h3><span class="sub-step">7d</span> — iOS code review checklist</h3>
+    <p>When reviewing Claude's Swift code, watch for these common issues:</p>
+    <ul class="checklist">
+      <li>Force-unwrapped optionals (<code>!</code>) — prefer <code>guard let</code> or <code>if let</code></li>
+      <li>Missing <code>@MainActor</code> on ViewModels that update UI state</li>
+      <li>Incorrect access control — <code>public</code> on things that should be <code>internal</code></li>
+      <li>Overly complex SwiftUI view bodies — should be broken into subviews</li>
+      <li>Unused <code>import</code> statements Claude added unnecessarily</li>
+      <li>Completion handlers where <code>async/await</code> should be used</li>
+      <li>Missing error handling in <code>do/catch</code> blocks</li>
+      <li>New files that need to be added to the Xcode project manually</li>
+    </ul>
+
+    <h3><span class="sub-step">7e</span> — Managing context in long sessions</h3>
+    <p>Large iOS projects can fill Claude's context window quickly. Tips to manage this:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Technique</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td>Compact context</td><td>Type <code>/compact</code> to summarize and free up context mid-session</td></tr>
+          <tr><td>Scope to modules</td><td>Ask Claude to focus on one module/feature at a time, not the whole project</td></tr>
+          <tr><td>Multi-session workflow</td><td>Break large features into multiple sessions — each starts fresh with full context</td></tr>
+          <tr><td>Use subagents</td><td>Claude automatically spawns Explore subagents to search without filling your main context</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="callout tip">
@@ -1180,26 +1675,23 @@ git reset --hard HEAD</code></pre>
       <strong>Trade-off:</strong> iOS simulators require macOS and can't run inside a Docker container. With this approach, Claude writes code inside the container, and you build/run natively in Xcode on your Mac. You work in two windows.
     </div>
 
-    <h3>Option A — Anthropic's Official DevContainer</h3>
-
-    <h3><span class="sub-step">A1</span> — Install prerequisites</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-label">Install Docker and VS Code extension</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="comment"># 1. Install Docker Desktop</span>
-<span class="comment">#    Download from: https://www.docker.com/products/docker-desktop</span>
-<span class="comment">#    Open it and complete setup</span>
-
-<span class="comment"># 2. Install the Dev Containers CLI</span>
-npm install -g @devcontainers/cli
-
-<span class="comment"># 3. In VS Code, install the "Dev Containers" extension</span>
-<span class="comment">#    Cmd+Shift+X → search "Dev Containers" → Install</span></code></pre>
+    <div class="pill-tabs" data-group="devcontainer">
+      <button class="pill-tab active" data-tab="dc-official">Official</button>
+      <button class="pill-tab" data-tab="dc-tob">Trail of Bits</button>
+      <button class="pill-tab" data-tab="dc-docker">Docker One-Liner</button>
     </div>
 
-    <h3><span class="sub-step">A2</span> — Set up the devcontainer</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-label">Create .devcontainer in your project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code>cd ~/path/to/your/ios-project
+    <div class="tab-content active" data-tab="dc-official" data-group="devcontainer">
+      <h3>Anthropic's Official DevContainer</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="code-label">1. Install prerequisites</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="comment"># Install Docker Desktop from docker.com</span>
+npm install -g @devcontainers/cli
+<span class="comment"># In VS Code: Cmd+Shift+X → "Dev Containers" → Install</span></code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-label">2. Create .devcontainer in your project</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>cd ~/path/to/your/ios-project
 mkdir -p .devcontainer
 
 cat > .devcontainer/devcontainer.json << 'DEVEOF'
@@ -1216,63 +1708,55 @@ cat > .devcontainer/devcontainer.json << 'DEVEOF'
   ],
   "forwardPorts": [],
   "customizations": {
-    "vscode": {
-      "extensions": [
-        "anthropic.claude-code"
-      ]
-    }
+    "vscode": { "extensions": ["anthropic.claude-code"] }
   }
 }
 DEVEOF</code></pre>
-    </div>
-
-    <h3><span class="sub-step">A3</span> — Open in container</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-label">Launch the container</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="comment"># Option 1: VS Code</span>
-<span class="comment"># Open VS Code → Cmd+Shift+P → "Reopen in Container"</span>
-
-<span class="comment"># Option 2: CLI</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-label">3. Launch</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="comment"># VS Code: Cmd+Shift+P → "Reopen in Container"</span>
+<span class="comment"># Or via CLI:</span>
 devcontainer up --workspace-folder .
 devcontainer exec --workspace-folder . claude --dangerously-skip-permissions</code></pre>
+      </div>
     </div>
 
-    <h3>Option B — Trail of Bits DevContainer (Maximum Security)</h3>
-    <p>Built specifically for running Claude Code in bypass mode safely.</p>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-label">Install Trail of Bits devc tool</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="comment"># Install the devc tool</span>
+    <div class="tab-content" data-tab="dc-tob" data-group="devcontainer">
+      <h3>Trail of Bits DevContainer (Maximum Security)</h3>
+      <p>Purpose-built for running Claude Code in bypass mode safely.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-label">Install and run</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="comment"># Install the devc tool</span>
 npm install -g @devcontainers/cli
 git clone https://github.com/trailofbits/claude-code-devcontainer ~/.claude-devcontainer
 ~/.claude-devcontainer/install.sh self-install
 
-<span class="comment"># Navigate to your project and set up</span>
+<span class="comment"># Set up, start, and run</span>
 cd ~/path/to/your/ios-project
 devc .
-
-<span class="comment"># Start the container</span>
 devc up
-
-<span class="comment"># Open a shell inside</span>
 devc shell
-
-<span class="comment"># Run Claude inside the container</span>
 claude --dangerously-skip-permissions</code></pre>
+      </div>
     </div>
 
-    <h3>Option C — Quick Docker One-Liner</h3>
-    <p>Maximum isolation, zero config. Network disabled to prevent data exfiltration.</p>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-label">Docker one-liner with network disabled</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
-      <pre><code>docker run -it --rm \
+    <div class="tab-content" data-tab="dc-docker" data-group="devcontainer">
+      <h3>Quick Docker One-Liner</h3>
+      <p>Minimal config. Filesystem sandboxed to mounted workspace.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-label">Docker one-liner</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>docker run -it --rm \
   -v $(pwd):/workspace \
   -v ~/.claude:/root/.claude \
   -v ~/.claude.json:/root/.claude.json \
-  --network none \
   node:20 \
   bash -c "npm i -g @anthropic-ai/claude-code && cd /workspace && claude --dangerously-skip-permissions"</code></pre>
+      </div>
+      <div class="callout danger">
+        <span class="callout-icon">🚨</span>
+        <strong>Do NOT use <code>--network none</code>:</strong> Claude Code requires network access to the Anthropic API. The container already provides filesystem isolation.
+      </div>
     </div>
 
     <div class="callout tip">
@@ -1295,25 +1779,96 @@ claude --dangerously-skip-permissions</code></pre>
   </section>
 
   <!-- ════════════════════════════════════════════ -->
+  <!-- BUILDERS -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="section" id="builders">
+    <span class="section-icon">🛠</span>
+    <h2>Config <em>Builders</em></h2>
+    <p>Generate customized configuration files for your iOS project.</p>
+
+    <div class="builder">
+      <h3>CLAUDE.md Builder</h3>
+      <p class="sub">Fill in your project details and get a ready-to-use CLAUDE.md file.</p>
+
+      <div class="builder-grid">
+        <div class="builder-field">
+          <label>Architecture</label>
+          <select id="b-arch" onchange="buildClaudeMd()">
+            <option value="MVVM">MVVM</option>
+            <option value="MVC">MVC</option>
+            <option value="TCA">TCA (The Composable Architecture)</option>
+            <option value="VIPER">VIPER</option>
+          </select>
+        </div>
+        <div class="builder-field">
+          <label>Package Manager</label>
+          <select id="b-pkg" onchange="buildClaudeMd()">
+            <option value="SPM">Swift Package Manager</option>
+            <option value="CocoaPods">CocoaPods</option>
+            <option value="Both">SPM + CocoaPods</option>
+          </select>
+        </div>
+        <div class="builder-field">
+          <label>Min iOS Version</label>
+          <select id="b-ios" onchange="buildClaudeMd()">
+            <option value="18">iOS 18</option>
+            <option value="17">iOS 17</option>
+            <option value="16">iOS 16</option>
+          </select>
+        </div>
+        <div class="builder-field">
+          <label>Main Scheme Name</label>
+          <input type="text" id="b-scheme" placeholder="MyApp" oninput="buildClaudeMd()">
+        </div>
+      </div>
+
+      <label style="font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:10px;">Include Rules</label>
+      <div class="toggle-row">
+        <div class="toggle-chip on" data-rule="pbxproj" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> Protect .pbxproj</div>
+        <div class="toggle-chip on" data-rule="deletion" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> Block Deletion</div>
+        <div class="toggle-chip on" data-rule="observable" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> @Observable</div>
+        <div class="toggle-chip on" data-rule="async" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> Async/Await</div>
+        <div class="toggle-chip on" data-rule="tests" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> Unit Tests</div>
+        <div class="toggle-chip" data-rule="swiftdata" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> SwiftData</div>
+        <div class="toggle-chip" data-rule="tca" onclick="toggleChip(this);buildClaudeMd()"><span class="check">✓</span> TCA Rules</div>
+      </div>
+
+      <label style="font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:10px;">Generated CLAUDE.md</label>
+      <div class="output-box" id="claudemd-output">
+        <code></code>
+        <button class="output-copy" onclick="copyOutput('claudemd-output')">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
   <!-- REFERENCE -->
   <!-- ════════════════════════════════════════════ -->
   <section class="section" id="reference">
     <span class="section-icon">📖</span>
     <h2>Quick <em>Reference</em></h2>
 
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search commands..." id="ref-search" oninput="filterReference()">
+    </div>
+
     <div class="table-wrap">
-      <table>
+      <table id="ref-table">
         <thead><tr><th>Command</th><th>What It Does</th></tr></thead>
         <tbody>
           <tr><td><code>clauded</code></td><td>Start a safe Claude session (auto-checkpoints first)</td></tr>
           <tr><td><code>git reset --hard HEAD</code></td><td>Undo everything Claude did since checkpoint</td></tr>
           <tr><td><code>git diff HEAD</code></td><td>Review what Claude changed</td></tr>
+          <tr><td><code>git checkout -b claude/feature</code></td><td>Create isolated branch for Claude's work</td></tr>
           <tr><td><code>/build</code></td><td>Build the project (inside session)</td></tr>
           <tr><td><code>/test</code></td><td>Run all tests (inside session)</td></tr>
           <tr><td><code>/checkpoint</code></td><td>Save progress as git commit (inside session)</td></tr>
+          <tr><td><code>/compact</code></td><td>Summarize context to free up space (inside session)</td></tr>
+          <tr><td><code>Shift+Tab (x2)</code></td><td>Enter plan mode for complex tasks (inside session)</td></tr>
           <tr><td><code>/exit</code></td><td>Leave a Claude Code session</td></tr>
           <tr><td><code>source ~/.zshrc</code></td><td>Reload shell config after editing</td></tr>
-          <tr><td><code>open ~/.claude/settings.json</code></td><td>Edit permission whitelist</td></tr>
+          <tr><td><code>open ~/.claude/settings.json</code></td><td>Edit permissions and hooks</td></tr>
           <tr><td><code>open CLAUDE.md</code></td><td>Edit project guardrails</td></tr>
         </tbody>
       </table>
@@ -1403,6 +1958,38 @@ claude</code></pre>
         </div>
       </div></div>
     </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Hooks not firing / not blocking commands <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Check that your hooks are in the correct location and have the right structure:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code><span class="comment"># Validate your settings.json</span>
+python3 -c "import json; json.load(open('$HOME/.claude/settings.json')); print('Valid JSON')"
+
+<span class="comment"># Make sure hooks key is at the top level, alongside permissions</span>
+<span class="comment"># NOT nested inside permissions</span></code></pre>
+        </div>
+        <p>Also verify the hook command works standalone: copy the <code>"command"</code> value and run it directly in terminal with a test input.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Context window full — Claude losing track of earlier work <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Large iOS projects fill context quickly. Solutions:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Fix</span><button class="code-copy" onclick="copyCode(this); event.stopPropagation();">Copy</button></div>
+          <pre><code><span class="comment"># Inside a Claude session:</span>
+/compact    <span class="comment"># Summarize and free context</span>
+
+<span class="comment"># Or start a fresh session for the next subtask</span>
+<span class="comment"># Claude reads CLAUDE.md at session start, so context resets cleanly</span></code></pre>
+        </div>
+        <p>Tip: scope tasks to one module at a time. "Add login to the Auth module" is better than "refactor the whole app."</p>
+      </div></div>
+    </div>
   </section>
 
   <!-- ════════════════════════════════════════════ -->
@@ -1410,14 +1997,32 @@ claude</code></pre>
   <!-- ════════════════════════════════════════════ -->
   <section class="section" id="xcode26">
     <span class="section-icon">🔮</span>
-    <h2>Xcode 26 + <em>Claude</em></h2>
-    <p>Apple's Xcode Coding Intelligence feature (introduced in Xcode 16) already supports third-party models including Claude through the Intelligence settings panel. If Xcode 26 deepens this integration to allow Claude Opus 4.6 as a native coding intelligence provider, you'll get the benefit of Xcode's own sandboxing around Claude's actions — the IDE itself would control what Claude can and can't do.</p>
-    <p>Until then, this guide gives you the same practical outcome: fast, autonomous Claude-powered iOS development with guardrails that prevent catastrophic mistakes. The git checkpoint + XcodeBuildMCP combination is the closest you can get to container-level safety while keeping full native Xcode/Simulator access.</p>
+    <h2>Xcode 26.3 <em>Agentic Coding</em></h2>
+    <p>Xcode 26.3 (February 2026) introduced <strong>agentic coding</strong> — a major leap beyond autocomplete and chat. Agents can explore your project, build, run tests, fix errors, and capture Xcode Previews for visual verification.</p>
+
+    <h3>What's new in Xcode 26.3</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Claude Agent SDK</strong></td><td>Native integration — the same engine powering Claude Code, now built into Xcode</td></tr>
+          <tr><td><strong>OpenAI Codex</strong></td><td>Also supported alongside Claude</td></tr>
+          <tr><td><strong>Agent Activity pane</strong></td><td>Transparent log of every file accessed, command run, and decision made</td></tr>
+          <tr><td><strong>MCP support</strong></td><td>Xcode exposes capabilities via MCP — XcodeBuildMCP auto-detects scheme and simulator</td></tr>
+          <tr><td><strong>One-click setup</strong></td><td>Xcode Settings → Intelligence → add your API key and select a model</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <strong>This guide still applies:</strong> Even with Xcode 26.3's native integration, the guardrails in this guide (git checkpoints, CLAUDE.md rules, hooks) add an extra safety layer. The two approaches complement each other — use Xcode's built-in agent for IDE-integrated work and Claude Code CLI for terminal-based automation.
+    </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <p>Last updated February 2026 · Built for the Apple developer community</p>
+    <p>Last updated February 2026 · Built for the Apple developer community · XcodeBuildMCP v2 · Claude Code v2.1+</p>
   </footer>
 </div>
 
@@ -1492,6 +2097,91 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-20% 0px -70% 0px' });
 
 sections.forEach(s => observer.observe(s));
+
+// ── Pill Tabs (DevContainer) ──
+document.querySelectorAll('.pill-tabs').forEach(g => {
+  g.querySelectorAll('.pill-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      const gr = g.dataset.group;
+      g.querySelectorAll('.pill-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.querySelectorAll(`.tab-content[data-group="${gr}"]`).forEach(c => c.classList.remove('active'));
+      document.querySelector(`.tab-content[data-tab="${t.dataset.tab}"][data-group="${gr}"]`).classList.add('active');
+    });
+  });
+});
+
+// ── Search Reference Table ──
+function filterReference() {
+  const q = document.getElementById('ref-search').value.toLowerCase();
+  document.querySelectorAll('#ref-table tbody tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ── Toggle Chip ──
+function toggleChip(c) { c.classList.toggle('on'); }
+
+// ── Copy Output ──
+function copyOutput(id) {
+  const box = document.getElementById(id);
+  const text = box.querySelector('code').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = box.querySelector('.output-copy');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ── CLAUDE.md Builder ──
+function buildClaudeMd() {
+  const arch = document.getElementById('b-arch').value;
+  const pkg = document.getElementById('b-pkg').value;
+  const ios = document.getElementById('b-ios').value;
+  const scheme = document.getElementById('b-scheme').value.trim() || 'MyApp';
+  const rules = {};
+  document.querySelectorAll('.toggle-chip[data-rule]').forEach(c => {
+    rules[c.dataset.rule] = c.classList.contains('on');
+  });
+
+  let md = '# Project Rules for Claude Code\n\n## Critical — Never Do These\n';
+  if (rules.pbxproj) md += '- NEVER modify any .pbxproj or .xcscheme file directly.\n';
+  if (rules.deletion) md += '- NEVER use rm, rm -rf, rmdir, or any file deletion command.\n';
+  md += '- NEVER create files outside the project directory.\n';
+  md += '- NEVER modify .gitignore without asking first.\n';
+  md += '- NEVER touch lockfiles (Podfile.lock, Package.resolved).\n';
+  md += '- NEVER modify signing or provisioning settings.\n';
+  md += '- NEVER add third-party dependencies without asking.\n';
+
+  md += '\n## Required Practices\n';
+  md += '- Commit checkpoints after completing a feature.\n';
+  md += '- Place new Swift files in the correct group folder.\n';
+  md += '- Use SwiftUI for new views unless told otherwise.\n';
+  if (rules.observable && parseInt(ios) >= 17) md += '- Prefer @Observable over ObservableObject.\n';
+  if (rules.async) md += '- Use structured concurrency (async/await) over completion handlers.\n';
+  if (parseInt(ios) >= 17) md += '- Use #Preview macro syntax for previews.\n';
+  md += '- Add MARK: comments to organize code sections.\n';
+  md += '- Follow existing code patterns and naming conventions.\n';
+  if (rules.tests) md += '- Write XCTest unit tests for new business logic.\n';
+  if (rules.swiftdata) md += '- Use SwiftData for persistence. Follow existing model patterns.\n';
+  if (rules.tca) md += '- Follow TCA patterns: Reducer, Action, State, Effect.\n- Keep side effects in Effect. Views observe Store.\n';
+  md += '- When fixing a build error, fix only that error — do not refactor.\n';
+
+  md += '\n## Build Instructions\n';
+  md += '- Use XcodeBuildMCP tools instead of raw xcodebuild.\n';
+  md += '- Build: simulator/build\n';
+  md += '- Test:  simulator/test\n';
+  md += '- Run:   simulator/build-and-run\n';
+
+  md += '\n## Project Architecture\n';
+  md += '- Architecture: ' + arch + '\n';
+  md += '- Min target:   iOS ' + ios + '\n';
+  md += '- Packages:     ' + pkg + '\n';
+  md += '- Main scheme:  ' + scheme + '\n';
+
+  document.querySelector('#claudemd-output code').textContent = md;
+}
+buildClaudeMd();
 </script>
 </body>
 </html>
