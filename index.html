@@ -1357,7 +1357,7 @@ git commit -m "add Claude Code project guardrails"</code></pre>
     <div class="step-label">Step 4 <span class="step-time">· 10 minutes</span></div>
     <span class="section-icon">🔧</span>
     <h2>Xcode<em>BuildMCP</em> v2</h2>
-    <p>XcodeBuildMCP (now maintained by <strong>Sentry</strong>) gives Claude 59 structured tools for building, testing, debugging, and interacting with your app — instead of running raw shell commands. It supports Xcode projects, workspaces, and Swift packages across all Apple platforms.</p>
+    <p>XcodeBuildMCP (now maintained by <strong>Sentry</strong>) gives Claude 78 structured tools for building, testing, debugging, and interacting with your app — instead of running raw shell commands. It supports Xcode projects, workspaces, and Swift packages across all Apple platforms.</p>
 
     <h3><span class="sub-step">4a</span> — Check Node.js</h3>
     <div class="code-block">
@@ -1412,7 +1412,7 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
     </div>
 
     <h3><span class="sub-step">4e</span> — (Optional) Load only specific workflows</h3>
-    <p>XcodeBuildMCP v2 has 59 tools. To save context window space, load only what you need:</p>
+    <p>XcodeBuildMCP v2 has 78 tools. To save context window space, load only what you need:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-label">Load specific workflow groups</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
       <pre><code>claude mcp add --transport stdio XcodeBuildMCP \
@@ -1428,7 +1428,7 @@ xcode-select --install   <span class="comment"># Install if missing</span></code
           <tr><td><strong>Simulator</strong></td><td><code>build_sim</code>, <code>build_run_sim</code>, <code>test_sim</code></td><td>Build, run, and test on Simulator</td></tr>
           <tr><td><strong>Screenshots</strong></td><td><code>screenshot</code></td><td>Capture simulator screen for visual verification</td></tr>
           <tr><td><strong>UI Automation</strong></td><td><code>tap</code>, <code>swipe</code>, <code>type_text</code>, <code>long_press</code></td><td>Interact with running app UI elements</td></tr>
-          <tr><td><strong>UI Inspection</strong></td><td><code>describe_ui</code></td><td>Get full view hierarchy with frame coordinates</td></tr>
+          <tr><td><strong>UI Inspection</strong></td><td><code>snapshot_ui</code></td><td>Get full view hierarchy with frame coordinates</td></tr>
           <tr><td><strong>Device</strong></td><td>Deploy/test tools</td><td>Physical device deployment over USB/Wi-Fi</td></tr>
           <tr><td><strong>SPM</strong></td><td><code>swift_package_build</code>, <code>swift_package_test</code></td><td>Swift Package Manager operations</td></tr>
           <tr><td><strong>Project</strong></td><td><code>clean</code>, <code>list_sims</code>, <code>boot_sim</code></td><td>Project management and simulator control</td></tr>
