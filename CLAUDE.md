@@ -34,7 +34,6 @@ A single-page static documentation website teaching Apple platform developers to
 claude-code-ios-guide/
 ├── index.html                      # The complete guide (single-page app)
 ├── CLAUDE.md                       # Project rules (this file)
-├── firebase-debug.log              # Firebase CLI debug output (ignorable)
 └── .claude/
     ├── settings.local.json         # Local permission config
     └── docs/
